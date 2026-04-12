@@ -1,11 +1,13 @@
 /* Veridian Analytics — tracker.js
  * Snippet a coller sur les sites clients :
- *   <script async src="https://analytics/tracker.js" data-site-key="XXX"></script>
+ *   <script async src="https://analytics/tracker.js" data-site-key="XXX"
+ *           data-veridian-track="auto"></script>
  *
  * Ce qu'il fait :
  *   1. Page view automatique au chargement (+ SPA navigation via pushState)
  *   2. Intercepte les <form> submit (si data-veridian-track="form-name")
- *   3. Lit les utm_* depuis l'URL et les envoie avec chaque event
+ *   3. Tracke les clics CTA : liens tel:, mailto:, et data-veridian-cta="nom"
+ *   4. Lit les utm_* depuis l'URL et les envoie avec chaque event
  */
 (function () {
   'use strict';
@@ -147,6 +149,62 @@
         phone: payload.phone || payload.tel || payload.telephone || null,
         utmSource: u.utmSource,
       });
+    },
+    true,
+  );
+
+  // CTA click tracking — tracke automatiquement :
+  //   1. Les elements avec data-veridian-cta="nom" (ex: <button data-veridian-cta="devis">)
+  //   2. Les liens tel: (clics sur un numero de telephone)
+  //   3. Les liens mailto: (clics sur un email)
+  // En mode auto (data-veridian-track="auto" sur le script), on tracke aussi
+  // les boutons avec role="button" ou type="submit" hors formulaire.
+  document.addEventListener(
+    'click',
+    function (e) {
+      // Remonte le DOM pour trouver l'element cliquable le plus proche
+      var el = e.target;
+      var maxDepth = 5;
+      while (el && maxDepth-- > 0) {
+        // 1. Attribut explicite data-veridian-cta
+        var ctaName = el.getAttribute && el.getAttribute('data-veridian-cta');
+        if (ctaName) {
+          post('/api/ingest/pageview', {
+            path: window.location.pathname,
+            referrer: 'cta:' + ctaName,
+            sessionId: sessionId(),
+            utmSource: utmParams().utmSource,
+          });
+          return;
+        }
+
+        // 2. Lien tel: (clic sur numero de telephone)
+        if (el.tagName === 'A' && el.href) {
+          if (el.href.indexOf('tel:') === 0) {
+            var phone = el.href.replace('tel:', '').replace(/\s/g, '');
+            post('/api/ingest/pageview', {
+              path: window.location.pathname,
+              referrer: 'cta:tel:' + phone,
+              sessionId: sessionId(),
+              utmSource: utmParams().utmSource,
+            });
+            return;
+          }
+
+          // 3. Lien mailto:
+          if (el.href.indexOf('mailto:') === 0) {
+            post('/api/ingest/pageview', {
+              path: window.location.pathname,
+              referrer: 'cta:mailto',
+              sessionId: sessionId(),
+              utmSource: utmParams().utmSource,
+            });
+            return;
+          }
+        }
+
+        el = el.parentElement;
+      }
     },
     true,
   );
