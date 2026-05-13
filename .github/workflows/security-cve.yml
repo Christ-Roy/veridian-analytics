@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Build local image (no push)
         run: docker build -t analytics:${{ github.sha }} .
