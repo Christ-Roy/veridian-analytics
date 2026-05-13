@@ -1,0 +1,26 @@
+# Trivy CVE exceptions documentées
+# Format : CVE-ID puis commentaire de justification
+#
+# Toute exception doit avoir :
+# 1. Une raison technique (pourquoi pas exploitable dans notre contexte)
+# 2. Une date de revue (pour réévaluer quand l'upstream patch)
+
+# ───────────────────────────────────────────────────────────────────────────
+# CVE-2026-33671 — picomatch ReDoS via crafted extglob patterns
+# ───────────────────────────────────────────────────────────────────────────
+# Picomatch 4.0.3 est bundlé en interne par next.js 15.5.18 dans
+# `node_modules/next/dist/compiled/picomatch` (code transpilé Next.js, pas
+# une dep directe). Notre override pnpm `picomatch: ^4.0.4` est appliqué
+# au lockfile mais Next.js bundle sa propre copie avant publish sur npm.
+#
+# Non exploitable dans notre contexte :
+# - Picomatch est utilisé par Next.js INTERNEMENT pour le matching des
+#   routes au build time, pas runtime sur input utilisateur.
+# - Aucune route Analytics ne passe d'input utilisateur dans picomatch.
+# - Le ReDoS nécessite un attaquant qui contrôle le pattern, ce qui n'est
+#   le cas que côté build CI (déjà sandboxé GitHub Actions).
+#
+# À ré-évaluer quand : next.js publie une version qui bundle picomatch >= 4.0.4
+# Tracking issue : https://github.com/vercel/next.js/issues
+# Date revue : 2026-07-13 (2 mois)
+CVE-2026-33671
