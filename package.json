@@ -55,7 +55,7 @@
       "unrs-resolver"
     ],
     "overrides": {
-      "picomatch@<4.0.4": ">=4.0.4"
+      "picomatch": "^4.0.4"
     }
   }
 }
