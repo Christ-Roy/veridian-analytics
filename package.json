@@ -53,6 +53,9 @@
       "prisma",
       "sharp",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "picomatch@<4.0.4": ">=4.0.4"
+    }
   }
 }
