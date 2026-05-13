@@ -33,7 +33,7 @@ jobs:
         run: docker build -t analytics:${{ github.sha }} .
 
       - name: Run Trivy on built image
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'analytics:${{ github.sha }}'
           format: 'table'
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Trivy SARIF (for GitHub Security tab)
         if: always()
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'analytics:${{ github.sha }}'
           format: 'sarif'

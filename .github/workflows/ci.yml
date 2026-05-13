@@ -1,16 +1,16 @@
 # Analytics CI/CD — Pipeline complet polyrepo + Dokploy GitOps
 #
 # Flow push main :
-#  1. test           — lint, typecheck, vitest, build (cloud, ~90s)
-#  2. e2e            — playwright contre instance locale CI (cloud + postgres)
-#  3. audit          — pnpm audit --prod --audit-level high (bloquant CVE)
-#  4. docker         — build + push GHCR (self-hosted, cache local)
-#  5. deploy-staging — pull image sur dev-server, e2e staging
-#  6. deploy-prod    — redeploy Dokploy + health check
-#  7. rollback-prod  — si deploy-prod fail, retour image précédente
+#  1. test          — lint, typecheck, vitest, build (cloud, ~90s)
+#  2. e2e           — playwright contre instance locale CI (cloud + postgres)
+#  3. audit         — pnpm audit --prod --audit-level high (bloquant CVE)
+#  4. docker        — build + push GHCR (cloud, sans staging local)
+#  5. deploy-prod   — redeploy Dokploy + health check
+#  6. rollback-prod — si deploy-prod fail, retour image précédente
 #
 # Extrait du monorepo veridian-platform le 2026-05-13.
 # Source de vérité après l'extraction : ce fichier.
+# Le job deploy-staging du monorepo a été retiré (nécessitait runner self-hosted).
 
 name: Analytics CI/CD
 
@@ -284,7 +284,10 @@ jobs:
   docker:
     needs: [test, e2e, audit]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: [self-hosted, veridian]
+    # NOTE: self-hosted runner pas auto-partagé depuis le monorepo.
+    # Passer sur ubuntu-latest tant qu'on n'ajoute pas le runner à ce repo
+    # via Settings → Actions → Runners. Cf feedback_extract_app_from_monorepo.
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -299,7 +302,11 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          # CR_PAT fallback : utilisé tant que le package GHCR n'est pas
+          # transféré au nouveau repo. Une fois le transfert effectué via
+          # Settings → Packages → Manage Actions Access, GITHUB_TOKEN suffit
+          # et CR_PAT peut être retiré des secrets.
+          password: ${{ secrets.CR_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Extract version (auto-increment patch)
         id: version
@@ -332,90 +339,14 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-  # ── Phase 4 : Deploy staging (dev-server) + E2E staging ───────────
-  deploy-staging:
-    needs: docker
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: [self-hosted, veridian]
-    steps:
-      - name: Stop dev service + start staging compose
-        run: |
-          systemctl --user stop analytics-dev 2>/dev/null || true
-          sleep 2
-
-          cd ~/analytics-test
-
-          grep -q '^ENABLE_TEST_APIS=' .env 2>/dev/null || echo 'ENABLE_TEST_APIS=true' >> .env
-          grep -q '^ADMIN_API_KEY=' .env 2>/dev/null || echo 'ADMIN_API_KEY=staging-admin-key-for-e2e-tests-32ch' >> .env
-
-          docker compose pull
-          docker compose up -d --wait
-          echo "Staging container restarted with new image"
-
-          echo "Waiting for staging health..."
-          for i in $(seq 1 18); do
-            if curl -sf http://127.0.0.1:3100/api/health | grep -q ok; then
-              echo "Staging healthy after ${i}0s"
-              exit 0
-            fi
-            sleep 10
-          done
-          echo "ERROR: staging health check failed after 3min"
-          docker compose logs --tail=50
-          exit 1
-        working-directory: /home/ubuntu
-
-  e2e-staging:
-    needs: deploy-staging
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: [self-hosted, veridian]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile --ignore-scripts || pnpm install --no-frozen-lockfile --ignore-scripts
-
-      - name: Install Playwright chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Warm-up staging pages
-        run: |
-          echo "Warming up staging..."
-          curl -sf https://analytics-staging.veridian.site/api/health -o /dev/null && echo "  /api/health OK"
-          curl -sf https://analytics-staging.veridian.site/login -o /dev/null && echo "  /login OK"
-          echo "Warm-up done"
-
-      - name: "E2E Staging — smoke tests"
-        env:
-          ANALYTICS_E2E_URL: https://analytics-staging.veridian.site
-          E2E_EMAIL: robert@veridian.site
-          E2E_PASSWORD: test1234
-          ADMIN_API_KEY: ${{ secrets.ANALYTICS_STAGING_ADMIN_KEY }}
-        run: |
-          pnpm exec playwright test \
-            tests/e2e/01-health.spec.ts \
-            tests/e2e/02-auth.spec.ts \
-            tests/e2e/05-tracker.spec.ts \
-            --project=chromium --reporter=list --workers=1
-
-      - name: Upload playwright report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-staging
-          path: playwright-report
-          retention-days: 7
-
-  # ── Phase 5 : Deploy prod (VPS Dokploy) ───────────────────────────
+  # ── Phase 4 : Deploy prod (VPS Dokploy) ───────────────────────────
+  # NOTE: les jobs deploy-staging + e2e-staging du pipeline monorepo
+  # ont été retirés ici car ils nécessitaient le self-hosted runner
+  # (dev-server avec ~/analytics-test compose local). Réintroduire si le
+  # runner est ajouté à ce repo. La validation staging passe désormais
+  # par le job `e2e` cloud qui simule la prod avec un Postgres éphémère.
   deploy-prod:
-    needs: e2e-staging
+    needs: docker
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
