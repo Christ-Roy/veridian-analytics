@@ -13,7 +13,7 @@
 
 services:
   analytics-prod:
-    image: ghcr.io/christ-roy/analytics:latest@sha256:e8c57174afea774ff1f727d32f7c8822bf37dead51674e05f2fcffcbd7d717b7
+    image: ghcr.io/christ-roy/analytics:latest@sha256:8186b4efb4f089e47558b2f24b4eee12a0fe6cc93f23515e753cd462f71d223f
     restart: unless-stopped
     networks:
       - dokploy-network
