@@ -1,0 +1,59 @@
+name: Security — Trivy CVE scan
+
+# Scan Trivy hebdomadaire + sur PR pour détecter CVE upstream sur l'image Docker.
+# Complète le `pnpm audit` (côté Node) avec une couverture OS + libs système.
+# Bloque la CI si CRITICAL ou HIGH détectée (ignore-unfixed pour pas spammer
+# sur les CVE sans patch upstream).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'  # quotidien 3h UTC pour CVE upstream
+  workflow_dispatch:
+
+concurrency:
+  group: security-cve-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trivy-image-scan:
+    name: Trivy scan image Analytics
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build local image (no push)
+        run: docker build -t analytics:${{ github.sha }} .
+
+      - name: Run Trivy on built image
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          image-ref: 'analytics:${{ github.sha }}'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+
+      - name: Run Trivy SARIF (for GitHub Security tab)
+        if: always()
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          image-ref: 'analytics:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          ignore-unfixed: true
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'

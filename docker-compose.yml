@@ -1,0 +1,62 @@
+# Veridian Analytics — Compose Dokploy GitOps
+#
+# Ce fichier est la source de vérité de la stack analytics en prod.
+# Dokploy le pull via webhook GitHub sur chaque push main, redeploy si changement.
+#
+# Image SHA-pinned pour éviter les surprises de `:latest`. Le CI principal
+# (.github/workflows/ci.yml) builde + push GHCR + appelle l'API Dokploy
+# redeploy avec un :rollback tag de l'image précédente pour rollback auto.
+#
+# Pour bump l'image manuellement : `docker pull ghcr.io/christ-roy/analytics:latest`
+# puis `docker inspect ghcr.io/christ-roy/analytics:latest --format '{{.RepoDigests}}'`
+# et copier le SHA ici.
+
+services:
+  analytics-prod:
+    image: ghcr.io/christ-roy/analytics:latest@sha256:e8c57174afea774ff1f727d32f7c8822bf37dead51674e05f2fcffcbd7d717b7
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      DATABASE_URL: ${DATABASE_URL}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:3000/api/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.1"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.analytics-prod.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.analytics-prod.entrypoints=websecure
+      - traefik.http.routers.analytics-prod.tls.certresolver=letsencrypt
+      - traefik.http.services.analytics-prod.loadbalancer.server.port=3000
+
+networks:
+  dokploy-network:
+    external: true

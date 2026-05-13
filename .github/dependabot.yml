@@ -1,0 +1,64 @@
+version: 2
+updates:
+  # npm/pnpm deps (Next.js, Prisma, Auth.js etc.)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # Bundler les patches mineurs pour éviter le spam
+      patch-updates:
+        update-types:
+          - "patch"
+      # Grouper les bumps Prisma (client + cli doivent matcher)
+      prisma:
+        patterns:
+          - "@prisma/*"
+          - "prisma"
+
+  # Docker base image (Dockerfile)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"
+
+  # Docker compose images (compose Dokploy)
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "compose"
+    commit-message:
+      prefix: "chore(compose)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "actions"
+    commit-message:
+      prefix: "chore(actions)"
