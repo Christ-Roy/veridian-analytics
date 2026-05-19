@@ -42,11 +42,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    # ─── Fusible 60 % VM (politique Veridian) ──────────────────────────
+    # VM prod = 11 GB RAM / 6 CPU → 60 % = 6.6 GB / 3.6 CPU max par app.
+    # Si une app fuit, OOM-killer la cible elle seule sans tomber la VM.
+    # Monitoring : veridian-hub/scripts/ops/claude-hooks/infra-status.sh
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: "1.0"
+          memory: 6600M
+          cpus: "3.6"
         reservations:
           memory: 256M
           cpus: "0.1"
