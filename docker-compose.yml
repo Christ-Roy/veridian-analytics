@@ -13,7 +13,7 @@
 
 services:
   analytics-prod:
-    image: ghcr.io/christ-roy/analytics:latest@sha256:8186b4efb4f089e47558b2f24b4eee12a0fe6cc93f23515e753cd462f71d223f
+    image: ghcr.io/christ-roy/analytics:latest@sha256:f1fe464b0133cd7664dd8b734d142ff3963bf4fe7fc412cfb6102b9f9b9eb124
     pull_policy: always
     restart: unless-stopped
     networks:
