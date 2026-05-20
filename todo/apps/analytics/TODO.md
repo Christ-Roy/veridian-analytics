@@ -93,6 +93,19 @@ veridian-analytics/         # repo polyrepo (extrait monorepo 2026-05-13)
 
 ### Features (priorité Robert)
 
+- [ ] **🟧 SPRINT ACTIF — Migration staminads + URL shortener prod** :
+      [`../../2026-05-20-sprint-staminads-migration-prod.md`](../../2026-05-20-sprint-staminads-migration-prod.md)
+      - Phase A : raccourcisseur d'URL interne (`/r/<slug>`, table `ShortLink`, admin)
+      - Phase B : dual-tracking staminads 30j sur les 5 clients actifs
+      - Phase C : cutover legacy à J+30
+- [ ] **Roadmap staminads complète** : [`../../2026-05-17-integration-staminads.md`](../../2026-05-17-integration-staminads.md)
+      (Phase 0→1 ✓ livrées, Phase 2 visitor_id à venir, Phase 5 VoIP différée)
+- [ ] **Auto-promote staging→main** : [`../../2026-05-19-auto-promote-staging-main.md`](../../2026-05-19-auto-promote-staging-main.md)
+      (P3, 30min — câbler quand on a un cycle stable de push)
+- [ ] **Tickets cross-app dormants (P5)** activables quand Analytics passe en SaaS public :
+  - [`../../2026-05-20-add-discovery-endpoint-by-email.md`](../../2026-05-20-add-discovery-endpoint-by-email.md)
+  - [`../../2026-05-20-add-oauth-buttons-login-page.md`](../../2026-05-20-add-oauth-buttons-login-page.md)
+  - [`../../2026-05-20-hub-integration-when-saas-launched.md`](../../2026-05-20-hub-integration-when-saas-launched.md)
 - [ ] Voir `docs/roadmap/IDEAS.md` pour la liste exhaustive des features candidates
 - [ ] Voir `docs/roadmap/LONG-TERM-VISION.md` pour le positionnement long terme
 
