@@ -20,4 +20,29 @@
 # Renovate et agents auto ne peuvent pas ajouter de couverture sans toucher
 # ce fichier. Reviewable comme du code.
 
-# Aucune couverture non-canonique déclarée pour le moment.
+# ─── D1 — URL shortener interne (lnk.veridian.site) ──────────────────────────
+- sources:
+    - lib/short-links.ts
+  covered_by:
+    - tests/unit/short-links.test.ts
+    - tests/unit/r-redirect.test.ts
+    - tests/unit/short-links-admin-api.test.ts
+  reason: |
+    Le repo utilise `tests/unit/<name>.test.ts` (pas __tests__/) comme
+    convention historique (cf. tous les tests unitaires existants).
+    Les helpers purs (slugFromUrl, buildRedirectUrl, isValidTargetUrl)
+    sont couverts par short-links.test.ts. resolveShortLink (cache-wrapped)
+    est exerce indirectement par r-redirect.test.ts via le handler GET.
+
+- sources:
+    - app/api/admin/short-links/route.ts
+    - app/api/admin/short-links/[id]/route.ts
+    - app/api/admin/short-links/[id]/stats/route.ts
+  covered_by:
+    - tests/unit/short-links-admin-api.test.ts
+    - tests/e2e/12-url-shortener.spec.ts
+  reason: |
+    Les routes admin sont couvertes par un test unitaire complet
+    (short-links-admin-api.test.ts) qui mock prisma + auth et exerce
+    GET/POST/PATCH/DELETE + endpoint stats. Le test e2e Playwright
+    valide le flow integre (create -> redirect -> stats).

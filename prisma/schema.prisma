@@ -40,6 +40,7 @@ model User {
   accounts    Account[]
   sessions    Session[]
   memberships Membership[]
+  shortLinks  ShortLink[]  @relation("ShortLinkCreatedBy")
 
   @@schema("analytics")
 }
@@ -109,6 +110,7 @@ model Tenant {
   sites              Site[]
   leads              Lead[]
   pushSubscriptions  PushSubscription[]
+  shortLinks         ShortLink[]
 
   @@schema("analytics")
 }
@@ -478,5 +480,54 @@ model PushSubscription {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+  @@schema("analytics")
+}
+
+// ============================================================================
+// ShortLink — Raccourcisseur d'URL interne Veridian (D1)
+// ============================================================================
+// Use case : Robert poste sur LinkedIn / mails / QR codes avec des URLs
+// propres `lnk.veridian.site/<slug>` au lieu d'URLs UTM moches. Les UTM
+// sont stockes en DB et injectes a la redirection 302 vers targetUrl.
+// Stats clics dans /admin/short-links.
+
+model ShortLink {
+  id          String    @id @default(cuid())
+  slug        String    @unique // ex: tt-linkedin-mars
+  targetUrl   String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  tenantId    String?   // null = lien Robert personnel
+  createdBy   String    // user id Robert
+  expiresAt   DateTime?
+  clickCount  Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant        Tenant?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  createdByUser User             @relation("ShortLinkCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+  clicks        ShortLinkClick[]
+
+  @@index([tenantId])
+  @@index([active, expiresAt])
+  @@schema("analytics")
+}
+
+model ShortLinkClick {
+  id          String   @id @default(cuid())
+  shortLinkId String
+  ip          String?
+  userAgent   String?
+  referer     String?
+  country     String?  // depuis cf-ipcountry header
+  createdAt   DateTime @default(now())
+
+  shortLink ShortLink @relation(fields: [shortLinkId], references: [id], onDelete: Cascade)
+
+  @@index([shortLinkId, createdAt])
   @@schema("analytics")
 }
