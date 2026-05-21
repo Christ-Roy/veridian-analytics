@@ -121,19 +121,33 @@ Robert reste maître du sprint et tranche les blocages.
 
 ## ✅ État du sprint (mis à jour par les agents)
 
+### Stratégie de batching adoptée (2026-05-21 par agent principal)
+
+Les 10 agents en parallèle stricto sensu = non viable :
+- Dépendances réelles : A3 dep A2 · B1/B2/B3 dep A4 (DB Postgres) · C2 dep A1+A2+A3+A4+C1 · C3 dep C1 · D2 dep A1+A2+A3+B1
+- 10 worktrees pnpm install simultanés sur dev-pub (87% disque) = crash
+- Migrations Prisma concurrentes = conflits timestamps garantis
+- 10 modifs simultanées sur test-coverage-map.yaml = merge hell
+
+**3 batches séquentiels au lieu de 1 vague de 10** :
+- **Batch 1** (parallèle 6 agents) : A1, A2, A4, B3*, C1, D1 — vraiment indépendants
+  *B3 attend A4 pour la DB mais peut démarrer la lib HMAC + tests en parallèle
+- **Batch 2** (parallèle 3) après A4 mergée : A3, B1, B2
+- **Batch 3** (parallèle 3) après C1 + endpoints A* mergés : C2, C3, D2
+
 | Ticket | Status | Owner | Notes |
 |---|---|---|---|
-| A1 | ⏳ pending | — | — |
-| A2 | ⏳ pending | — | — |
-| A3 | ⏳ pending | — | — |
-| A4 | ⏳ pending | — | — |
-| B1 | ⏳ pending | — | — |
-| B2 | ⏳ pending | — | — |
-| B3 | ⏳ pending | — | — |
-| C1 | ⏳ pending | — | — |
-| C2 | ⏳ pending | — | — |
-| C3 | ⏳ pending | — | — |
-| D1 | ⏳ pending | — | — |
-| D2 | ⏳ pending | — | — |
+| A1 | 🚧 batch1 | agent | port score → bridge |
+| A2 | 🚧 batch1 | agent | port tenant-status → bridge |
+| A3 | ⏳ batch2 | — | dep A2 |
+| A4 | 🚧 batch1 | agent | port GSC + DB Postgres bridge |
+| B1 | ⏳ batch2 | — | dep A4 (DB) |
+| B2 | ⏳ batch2 | — | dep A4 (DB) |
+| B3 | 🚧 batch1 | agent | Hub contract HMAC |
+| C1 | 🚧 batch1 | agent | port composants UI |
+| C2 | ⏳ batch3 | — | dep A1+A2+A3+A4+C1 |
+| C3 | ⏳ batch3 | — | dep C1 |
+| D1 | 🚧 batch1 | agent | URL shortener (repo legacy) |
+| D2 | ⏳ batch3 | — | dep A1+A2+A3+B1 livrés |
 
 Légende status : ⏳ pending | 🚧 in_progress | ✅ done | ❌ blocked
