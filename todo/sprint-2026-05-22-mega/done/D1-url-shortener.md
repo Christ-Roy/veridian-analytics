@@ -133,7 +133,27 @@ Guard : `requireAdmin()` server-side sur tous (cf. CLAUDE.md repo : CVE-2025-299
 
 ## Status
 
-⏳ pending
+✅ **done** — 2026-05-21
+
+Livraison :
+- PR : https://github.com/Christ-Roy/veridian-analytics/pull/17 (branche `feat/D1-url-shortener`)
+- Commit principal : `feat: D1 URL shortener interne (lnk.veridian.site)`
+- CI locale verte : tsc + 302 tests vitest (dont 38 nouveaux) + audit prod + build
+- DNS Cloudflare : CNAME `lnk.veridian.site -> analytics.app.veridian.site` créé (proxied) via API CF
+- test-coverage-map.yaml mis à jour pour couverture des 4 sources critiques
+
+Fichiers livrés :
+- `prisma/schema.prisma` (+ `ShortLink` + `ShortLinkClick`, relations User/Tenant)
+- `lib/short-links.ts` (helpers purs + cache `unstable_cache` 60s)
+- `app/r/[slug]/route.ts` + `app/r/[slug]/not-found/page.tsx`
+- `app/api/admin/short-links/{,*}` (list/create, [id] CRUD, [id]/stats)
+- `app/admin/short-links/{,*}` (page liste avec tableau/filtre tenant/modal create, page [id] avec Sparkline + top referers/pays + editor inline)
+- `middleware.ts` (rewrite `Host=lnk.veridian.site/<slug> -> /r/<slug>` ; racine -> redirect `veridian.site`)
+- `tests/unit/short-links{,-admin-api,-redirect}.test.ts` + `tests/e2e/12-url-shortener.spec.ts`
+
+Reste à faire post-merge :
+- `prisma db push` en prod (déclenché auto par la CI sur main)
+- Smoke test : créer un lien dans `/admin/short-links` -> hit `lnk.veridian.site/<slug>` -> vérifier 302 + click compté
 
 ## Notes pour l'agent qui pick
 

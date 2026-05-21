@@ -39,7 +39,7 @@ Chaque ticket est conçu pour être **autonome** : un agent qui débarque peut l
 
 | # | Ticket | Owner | Charge | Dépend de |
 |---|---|---|---|---|
-| **D1** | [url-shortener.md](./D1-url-shortener.md) | Agent fullstack legacy | 8h | rien (vit dans veridian-analytics Next.js legacy) |
+| **D1** ✅ | [url-shortener.md](./done/D1-url-shortener.md) | Agent fullstack legacy | 8h | **livré 2026-05-21, PR #17** |
 | **D2** | [migrate-5-clients.md](./D2-migrate-5-clients.md) | Agent ops | 6h | A1+A2+A3+B1 livrés + visitor_id staminads patché |
 
 ---
