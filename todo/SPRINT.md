@@ -2,30 +2,61 @@
 
 > **But** : aller au bout du sprint en **2-3 sessions agent** sans se perdre.
 > Ce fichier est le **plan d'attaque ordonné**. Coche les cases au fur et à mesure.
-> Mis à jour : 2026-05-20
+> Mis à jour : 2026-05-21
 
 > Pour le contexte stratégique → [INDEX.md](./INDEX.md)
-> Pour les specs détaillées → [2026-05-20-sprint-staminads-migration-prod.md](./2026-05-20-sprint-staminads-migration-prod.md) + [2026-05-20-hub-integration-prepare-analytics.md](./2026-05-20-hub-integration-prepare-analytics.md)
+> Pour les specs détaillées : voir tickets référencés dans chaque session.
 
 ---
 
-## Vue d'ensemble — 3 sessions
+## ⚠️ Note 2026-05-21 — Giga sprint préparé
+
+Le sprint a été **réétoffé après audit code base** :
+- Le legacy `veridian-analytics` (Next.js) **a 6 grosses features Veridian-propriétaires** (Score Veridian, Shadow marketing, GSC, Forms+Leads, Push PWA, Calls) qu'il faut porter dans le nouveau stack `veridian-analytics-engine/bridge` AVANT de migrer les clients prod
+- Le **contrat Hub** doit être câblé côté nouveau bridge (pas côté legacy qu'on abandonne)
+- L'**UI doit être portée** dans la console staminads (pages dashboard + admin), puis polish initial avec Chrome MCP, puis polish continu live avec Robert
+
+Donc 4 sessions plutôt que 3, mais plus solides.
+
+**Pré-requis avant de démarrer** :
+- ✅ Env dev hot-reload opérationnel : `https://analytics-engine-dev.staging.veridian.site/` (200 OK)
+- ✅ Husky pre-push câblé (refuse push sans test sur fichiers critiques)
+- ✅ Tickets détaillés (cf. liens dans chaque session)
+
+---
+
+## Vue d'ensemble — 4 sessions
 
 | Session | Charge | Livrable | Critère "OK" |
 |---|---|---|---|
-| **S1 — Shortener + base Hub** | ~1 jour | URL shortener prod + 3 endpoints Hub provisioning de base | Robert peut créer un lien, le poster sur LinkedIn, voir les clics. Hub peut provisionner Analytics via `POST /api/tenants/provision`. |
-| **S2 — Dual-tracking staminads** | ~2 jours | 5 clients tracking en parallèle legacy+staminads, diff dashboard | `/admin/migration-diff` affiche écart par tenant. Snippet staminads en place sur les 5 sites. |
-| **S3 — Cutover + Hub avancé** | ~2 jours | Legacy off, observabilité Hub, paywall obfusqué, idempotency | Tables legacy archivées. Contrat Hub à ≥80% complet. |
-
-À J+30 du sprint S2 : retrait legacy.
+| **S1 — Backend features port + URL shortener** | ~2 jours | Score Veridian, Shadow marketing, Tenant status, GSC, Forms+Leads, Push portés dans bridge + URL shortener prod livré | Robert ouvre l'env dev, voit le Score Veridian sur un workspace test + le shortener marche en prod sur veridian-analytics |
+| **S2 — UI port + Hub base + dual-tracking 5 clients** | ~2 jours | Pages dashboard portées (Chrome MCP audit) + 3 endpoints Hub base + 5 clients en dual-tracking | Console dev affiche les 6 pages sans erreur, Hub peut `POST /api/tenants/provision`, snippet staminads sur 5 sites |
+| **S3 — Cutover legacy + Hub avancé** | ~2 jours (à J+30 du dual-tracking) | Legacy off, observabilité Hub, paywall obfusqué, idempotency | Tables legacy archivées R2. Contrat Hub matrice §10 ≥80% ✅ |
+| **S4 — Polish UI continu live avec Robert** | ~ongoing | Itérations sur `UI-POLISH.md` en hot-reload | Robert valide visuellement chaque écran modifié |
 
 ---
 
-## 🔥 SESSION 1 — URL shortener + Hub base (1 jour)
+## 🔥 SESSION 1 — Backend features port + URL shortener (2 jours)
 
-### Bloc S1.1 — URL shortener (4-6h) — **commence ici**
+> Ordre : S1.0 → S1.A → S1.B (parallélisable agent SDK si pertinent)
 
-> Pourquoi en premier : produit autonome utile dès demain, ne dépend de rien.
+### Bloc S1.0 — Port features Analytics legacy → bridge (1 jour) — **commence ici**
+
+> **Spec complète** : [`2026-05-21-features-legacy-to-staminads.md`](./2026-05-21-features-legacy-to-staminads.md) Phase B1
+
+À porter depuis `veridian-analytics/lib/` vers `veridian-analytics-engine/veridian-bridge/src/` :
+
+- [ ] **Score Veridian** : `score.ts` + endpoint `GET /api/admin/tenant/:slug/score`
+- [ ] **Tenant status** : `tenant-status.ts` + endpoint `GET /api/admin/tenant/:slug/status` (6 services actifs/inactifs)
+- [ ] **Shadow marketing config** : `shadow-marketing.ts` + endpoint `GET /api/admin/shadow-marketing`
+- [ ] **GSC integration** : `gsc.ts` + tables Postgres bridge `GscProperty`/`GscDaily` + cron pull + endpoint `GET /api/admin/tenant/:slug/gsc`
+- [ ] **Forms + Leads** : tables Postgres `FormSubmission`/`FormSchema`/`Lead`/`LeadSession` + endpoint `POST /api/ingest/form` (compatible tracker legacy pendant transition)
+- [ ] **Push notifications** : table `PushSubscription` + endpoints `POST /api/push/subscribe` + `POST /api/admin/push/send`
+- [ ] **Tests** : 1 test par lib portée (Husky bloque sans test)
+
+### Bloc S1.A — URL shortener (4-6h)
+
+> Pourquoi : produit autonome utile dès demain, ne dépend de rien.
 > Spec complète : [2026-05-20-sprint-staminads-migration-prod.md §Phase A](./2026-05-20-sprint-staminads-migration-prod.md)
 
 #### Backend
@@ -67,7 +98,16 @@
 
 ---
 
-### Bloc S1.2 — Hub provisioning de base (4-5h)
+### Bloc S1.B — Hub provisioning de base (4-5h) — DÉPLACÉ EN S2
+
+> Note 2026-05-21 : déplacé en S2 pour ne pas surcharger S1 et faire les choses dans le bon ordre :
+> 1. D'abord on a les features backend (S1)
+> 2. Ensuite on porte l'UI + on câble Hub (S2)
+> Cf. [Session 2](#-session-2--ui-port--hub-base--dual-tracking-5-clients-2-jours)
+
+---
+
+### ~~Bloc S1.2 — Hub provisioning de base (4-5h)~~ — *déplacé en S2.B*
 
 > Spec complète : [2026-05-20-hub-integration-prepare-analytics.md](./2026-05-20-hub-integration-prepare-analytics.md)
 > Source de vérité : `../CONTRAT-HUB.md` §5.1, §5.3, §5.5, §6.1
@@ -104,12 +144,38 @@
 
 ---
 
-## 🔥 SESSION 2 — Dual-tracking staminads (2 jours)
+## 🔥 SESSION 2 — UI port + Hub base + dual-tracking 5 clients (2 jours)
 
-> Spec : [2026-05-20-sprint-staminads-migration-prod.md §Phase B](./2026-05-20-sprint-staminads-migration-prod.md)
-> Pré-requis : sprint staminads Phase 2 visitor_id livrée (côté `veridian-analytics-engine` branche dev/staging)
+> Pré-requis : Session 1 livrée (backend bridge endpoints prêts)
+> Spec UI : [`2026-05-21-ui-port-and-polish-staminads.md`](./2026-05-21-ui-port-and-polish-staminads.md)
+> Spec dual-tracking : [`2026-05-20-sprint-staminads-migration-prod.md §Phase B`](./2026-05-20-sprint-staminads-migration-prod.md)
+> Spec Hub : [`2026-05-20-hub-integration-prepare-analytics.md`](./2026-05-20-hub-integration-prepare-analytics.md)
 
-### Bloc S2.1 — Provisioning staminads des 5 clients (3-4h)
+### Bloc S2.A — Port UI Veridian dans console staminads (jour 1)
+
+> **Spec complète** : [`2026-05-21-ui-port-and-polish-staminads.md`](./2026-05-21-ui-port-and-polish-staminads.md) Phases U1+U2
+
+- [ ] Composants React portés (ServiceScoreBlock, ShadowMarketingBlock, LockedServicePage, Sparkline, ImpersonationBanner)
+- [ ] Pages portées (dashboard root, gsc, forms, calls placeholder, push, settings, admin, welcome onboarding)
+- [ ] Tailwind + shadcn isolés sur `console/src/veridian/**` (ne pas mélanger avec AntDesign upstream)
+- [ ] Auth bridge JWT (remplacement Auth.js legacy)
+- [ ] **Chrome MCP audit** : 10 pages screenshotées, zéro erreur console, responsive validé, accessibilité minimale (alt + label + contraste WCAG AA)
+- [ ] Findings remontés dans `UI-POLISH.md` pour le polish continu de S4
+
+### Bloc S2.B — Hub provisioning de base (4-5h)
+
+> Spec : [`2026-05-20-hub-integration-prepare-analytics.md`](./2026-05-20-hub-integration-prepare-analytics.md) Phase 1
+
+- [ ] Migration BDD Postgres bridge `Tenant` (hubTenantId, plan, planSource, status, suspendedAt, softDeletedAt)
+- [ ] Lib HMAC : `veridian-bridge/src/hub-hmac.ts` (verify `{ts}.{body}` SHA-256, anti-replay 5min, constant-time)
+- [ ] Lib paywall : `veridian-bridge/src/paywall.ts` (`requireActivePlan(tenantId)`)
+- [ ] ENV : `HUB_HMAC_SECRET_STAGING`/`HUB_HMAC_SECRET_PROD`
+- [ ] Endpoint **`POST /api/tenants/provision`** (§5.1) idempotent
+- [ ] Endpoint **`POST /api/tenants/attach-owner`** (§5.3)
+- [ ] Endpoint **`GET /api/tenants/{id}/health`** (§5.5)
+- [ ] Tests contractuels (Cas A/B/C provision + HMAC reject)
+
+### Bloc S2.C — Provisioning staminads des 5 clients (3-4h)
 
 - [ ] Migration Prisma : ajouter à `analytics.Site` :
   - [ ] `staminadsWorkspaceId String?` unique
@@ -125,7 +191,7 @@
   - [ ] Génère un fichier `out/snippets-by-site.md` avec le snippet par client
 - [ ] Run staging d'abord, valider, puis prod
 
-### Bloc S2.2 — Pose des snippets côté sites clients (4-6h)
+### Bloc S2.D — Pose des snippets côté sites clients (4-6h)
 
 - [ ] **morel-volailles.com** (sur Veridian-hosted) : PR sur le repo du site, ajout `<script>` staminads dans `<head>` SANS retirer le legacy
 - [ ] **avse-monetique.veridian.site** : idem
@@ -134,7 +200,7 @@
 - [ ] **arnaud-capitaine.com** (externe) : email à Arnaud
 - [ ] Vérifier console navigateur sur chaque site : 0 erreur JS, les 2 trackers tirent en // sur `/api/ingest/pageview` (legacy) et `/track` (staminads)
 
-### Bloc S2.3 — Dashboard `/admin/migration-diff` (4-6h)
+### Bloc S2.E — Dashboard `/admin/migration-diff` (4-6h)
 
 - [ ] Page `app/admin/migration-diff/page.tsx` :
   - [ ] Tableau par tenant × 30j : `pageviews_legacy`, `pageviews_staminads`, `écart absolu`, `écart %`
@@ -146,7 +212,7 @@
   - [ ] Cache 60s pour éviter de hammer ClickHouse
 - [ ] Alerting Telegram via le système monitoring si écart > 10% pendant 3 jours consécutifs (optionnel mais conseillé)
 
-### Bloc S2.4 — Validation (1h)
+### Bloc S2.F — Validation (1h)
 
 - [ ] 24h après pose des snippets : écart < 5% sur les 5 tenants
 - [ ] Robert reçoit screenshot du dashboard diff, valide visuellement
@@ -154,10 +220,10 @@
 
 ---
 
-## 🔥 SESSION 3 — Cutover + Hub avancé (2 jours)
+## 🔥 SESSION 3 — Cutover + Hub avancé (2 jours, à J+30 du dual-tracking)
 
 > Cette session se fait **à J+30 du démarrage S2**, pas immédiatement après S2.
-> Entre temps, on observe et on polish (cf [UI-POLISH.md](./UI-POLISH.md)).
+> Entre temps, on observe (diff dashboard) et on polish UI continu avec Robert (S4).
 
 ### Bloc S3.1 — Cutover legacy (4-5h)
 
@@ -201,6 +267,24 @@
   - [ ] Nouvelle memory `project_url_shortener` (choix architecturaux)
   - [ ] Nouvelle memory `project_hub_contract_analytics` (état du contrat)
 - [ ] Archiver les tickets dormants P5 → marquer "réveillés" dans leur header
+
+---
+
+## 🔥 SESSION 4 — Polish UI continu live avec Robert (ongoing)
+
+> **Pas un sprint borné** : itérations continues sur `UI-POLISH.md` au fur et à mesure que Robert clique dans le dashboard.
+
+Workflow :
+1. Robert ouvre `https://analytics-engine-dev.staging.veridian.site/` et dit "le bouton X est mal placé"
+2. Agent modifie le composant sur branche `dev` (Tailwind + shadcn pour blocs Veridian)
+3. `git push origin dev` → CI dev-checks (~30s)
+4. `ssh dev-pub 'bash /opt/dev/analytics-engine/scripts/dev-up.sh'` → reload auto (NestJS watch ~1-2s, Vite HMR si configuré)
+5. Robert refresh → valide ou ajuste
+6. Quand validé : `git merge dev → staging → push`
+
+À chaque polish : `git commit -m "polish(ui): <feature> — <changement>"` pour traçabilité.
+
+Liste des polish déjà identifiés : voir [`UI-POLISH.md`](./UI-POLISH.md).
 
 ---
 

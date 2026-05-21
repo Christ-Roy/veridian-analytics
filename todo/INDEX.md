@@ -45,6 +45,10 @@ Avant ou en parallèle : patch SDK `visitor_id` côté `veridian-analytics-engin
 ### Sprint en cours (P2)
 - 🟧 **[2026-05-20-sprint-staminads-migration-prod.md](./2026-05-20-sprint-staminads-migration-prod.md)** — détail complet phases A/B/C avec critères d'acceptation
 
+### Tickets du giga sprint (P2, créés 2026-05-21)
+- 🟧 **[2026-05-21-features-legacy-to-staminads.md](./2026-05-21-features-legacy-to-staminads.md)** — port des 6 features Veridian-propriétaires (Score, Shadow marketing, GSC, Forms+Leads, Push, Calls) depuis le legacy vers le bridge
+- 🟧 **[2026-05-21-ui-port-and-polish-staminads.md](./2026-05-21-ui-port-and-polish-staminads.md)** — port UI complet + audit Chrome MCP + premier polish global
+
 ### Roadmap moyen terme (P2-P3)
 - 🟧 **[2026-05-17-integration-staminads.md](./2026-05-17-integration-staminads.md)** — roadmap staminads 6 phases (Phase 0+1 ✓, Phase 2 visitor_id à venir)
 - 🟧 **[2026-05-20-hub-integration-prepare-analytics.md](./2026-05-20-hub-integration-prepare-analytics.md)** — préparation contrat Hub (12 endpoints HMAC, webhooks, paywall) — actif maintenant pour préparer le SaaS public
@@ -104,6 +108,8 @@ Index complet : `~/.claude/projects/-home-brunon5-Bureau-veridian-platform-verid
 | Tu veux… | Va dans… |
 |---|---|
 | Démarrer immédiatement | [SPRINT.md](./SPRINT.md) |
+| Porter les features legacy | [2026-05-21-features-legacy-to-staminads.md](./2026-05-21-features-legacy-to-staminads.md) |
+| Porter l'UI + audit Chrome MCP | [2026-05-21-ui-port-and-polish-staminads.md](./2026-05-21-ui-port-and-polish-staminads.md) |
 | Polish UI avec Robert en live | [UI-POLISH.md](./UI-POLISH.md) |
 | Comprendre la stratégie staminads | [2026-05-17-integration-staminads.md](./2026-05-17-integration-staminads.md) |
 | Câbler le Hub | [2026-05-20-hub-integration-prepare-analytics.md](./2026-05-20-hub-integration-prepare-analytics.md) |

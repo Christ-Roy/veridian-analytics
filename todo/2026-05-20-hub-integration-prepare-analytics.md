@@ -23,6 +23,33 @@ Ce ticket vise à passer à **≥80% ✅ d'ici fin de sprint S3**.
 
 ---
 
+## État du code base actuel — analyse (2026-05-21)
+
+> Précision agent : le contrat Hub doit être implémenté côté **`veridian-analytics-engine/veridian-bridge`** (l'app NestJS+bridge cible) et **pas** côté `veridian-analytics` legacy (qu'on abandonne après migration).
+
+**Ce qui existe déjà côté `veridian-analytics` legacy (à ne PAS porter — c'est l'ancien)** :
+- `auth.ts` Auth.js v5 Credentials provider — sera remplacé par Pattern B (Bearer api_key tenant) côté nouveau bridge
+- `lib/admin-auth.ts` + `lib/admin-guard.ts` — pattern bring-your-own-key avec header `x-admin-key` — sera remplacé par Pattern A HMAC Hub
+- `lib/magic-link.ts` + `lib/otp.ts` — auth local — sera remplacé par `POST /api/workspaces.generateMagicLink` (§5.6)
+- Routes `app/api/admin/*` — qui consomment l'admin key Hub legacy — seront migrées vers les 12 endpoints `/api/tenants/*` du contrat
+
+**Ce qui existe côté `veridian-analytics-engine/veridian-bridge` (la cible — à étendre)** :
+- 3 routes admin actuelles : `provision-tenant`, `provision-existing-tenant` (à créer en Phase B sprint), magic link sortant
+- 0 endpoint contrat Hub HMAC pour l'instant — tout à câbler
+- DB Postgres bridge : à créer (cf. ticket port features legacy, table `Tenant` à étendre selon ce qui suit)
+
+**Modèle Prisma legacy à ne PAS migrer (sauf colonnes utiles)** : `Tenant`, `Membership`, `User`, `Account`, `Session`, `VerificationToken` — ces tables Auth.js sont remplacées par staminads native auth + bridge tokens.
+
+**Modèle Prisma legacy À porter dans bridge** (cf. ticket [`2026-05-21-features-legacy-to-staminads.md`](./2026-05-21-features-legacy-to-staminads.md)) :
+- `Site` (siteKey, domain, name)
+- `GscProperty` + `GscDaily` (intégration Search Console)
+- `FormSubmission` + `FormSchema` + `Lead` + `LeadSession` (forms + dedup leads)
+- `PushSubscription` (PWA notifs)
+
+Ce qui suit (endpoints HMAC + paywall + idempotency + observabilité) sera implémenté **dans le bridge**, pas dans le legacy.
+
+---
+
 ## Endpoints à implémenter (Pattern A — HMAC Hub)
 
 > Référence : `../CONTRAT-HUB.md` §5
