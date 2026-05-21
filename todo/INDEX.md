@@ -45,9 +45,16 @@ Avant ou en parallèle : patch SDK `visitor_id` côté `veridian-analytics-engin
 ### Sprint en cours (P2)
 - 🟧 **[2026-05-20-sprint-staminads-migration-prod.md](./2026-05-20-sprint-staminads-migration-prod.md)** — détail complet phases A/B/C avec critères d'acceptation
 
-### Tickets du giga sprint (P2, créés 2026-05-21)
-- 🟧 **[2026-05-21-features-legacy-to-staminads.md](./2026-05-21-features-legacy-to-staminads.md)** — port des 6 features Veridian-propriétaires (Score, Shadow marketing, GSC, Forms+Leads, Push, Calls) depuis le legacy vers le bridge
-- 🟧 **[2026-05-21-ui-port-and-polish-staminads.md](./2026-05-21-ui-port-and-polish-staminads.md)** — port UI complet + audit Chrome MCP + premier polish global
+### 🚀 GIGA SPRINT (10 agents en parallèle, 2026-05-22)
+- 🔥 **[sprint-2026-05-22-mega/README.md](./sprint-2026-05-22-mega/README.md)** — coordination 12 tickets parallélisables
+  - **A1-A4** : port features backend (Score, Tenant status, Shadow marketing, GSC)
+  - **B1-B3** : port ingestion + Hub contract (Forms+Leads, Push PWA, Hub HMAC base)
+  - **C1-C3** : UI port (composants, pages, onboarding wizard)
+  - **D1-D2** : URL shortener + migration 5 clients prod
+
+### Tickets giga sprint version "agent principal seul" (sessionnel)
+- 🟧 **[2026-05-21-features-legacy-to-staminads.md](./2026-05-21-features-legacy-to-staminads.md)** — vue agrégée des features backend port (équiv. A1+A2+A3+A4+B1+B2)
+- 🟧 **[2026-05-21-ui-port-and-polish-staminads.md](./2026-05-21-ui-port-and-polish-staminads.md)** — vue agrégée UI port (équiv. C1+C2+C3)
 
 ### Roadmap moyen terme (P2-P3)
 - 🟧 **[2026-05-17-integration-staminads.md](./2026-05-17-integration-staminads.md)** — roadmap staminads 6 phases (Phase 0+1 ✓, Phase 2 visitor_id à venir)
@@ -107,7 +114,8 @@ Index complet : `~/.claude/projects/-home-brunon5-Bureau-veridian-platform-verid
 
 | Tu veux… | Va dans… |
 |---|---|
-| Démarrer immédiatement | [SPRINT.md](./SPRINT.md) |
+| Démarrer le GIGA SPRINT (10 agents) | [sprint-2026-05-22-mega/README.md](./sprint-2026-05-22-mega/README.md) |
+| Démarrer en mode agent seul | [SPRINT.md](./SPRINT.md) |
 | Porter les features legacy | [2026-05-21-features-legacy-to-staminads.md](./2026-05-21-features-legacy-to-staminads.md) |
 | Porter l'UI + audit Chrome MCP | [2026-05-21-ui-port-and-polish-staminads.md](./2026-05-21-ui-port-and-polish-staminads.md) |
 | Polish UI avec Robert en live | [UI-POLISH.md](./UI-POLISH.md) |
