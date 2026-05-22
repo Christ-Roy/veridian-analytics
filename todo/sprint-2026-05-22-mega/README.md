@@ -137,17 +137,39 @@ Les 10 agents en parallèle stricto sensu = non viable :
 
 | Ticket | Status | Owner | Notes |
 |---|---|---|---|
-| A1 | 🚧 batch1 | agent | port score → bridge |
-| A2 | 🚧 batch1 | agent | port tenant-status → bridge |
-| A3 | ⏳ batch2 | — | dep A2 |
-| A4 | 🚧 batch1 | agent | port GSC + DB Postgres bridge |
-| B1 | ⏳ batch2 | — | dep A4 (DB) |
-| B2 | ⏳ batch2 | — | dep A4 (DB) |
-| B3 | 🚧 batch1 | agent | Hub contract HMAC |
-| C1 | 🚧 batch1 | agent | port composants UI |
-| C2 | ⏳ batch3 | — | dep A1+A2+A3+A4+C1 |
-| C3 | ⏳ batch3 | — | dep C1 |
-| D1 | 🚧 batch1 | agent | URL shortener (repo legacy) |
-| D2 | ⏳ batch3 | — | dep A1+A2+A3+B1 livrés |
+| A1 | ✅ done | agent | port score → bridge (commit 1c022d8 sur dev) |
+| A2 | ✅ done | agent | port tenant-status → bridge (commit 52ee4a7 sur dev) |
+| A3 | ✅ done | agent | port shadow-marketing → bridge (commit ecd31f5 sur dev) |
+| A4 | ✅ done | agent | port GSC + DB Postgres bridge (commit 147a190 sur dev — branche `feat/A4-gsc-integration-port`) |
+| B1 | ✅ done | agent | port FormSubmission + Lead → bridge (commit 7c8d08a sur dev — branche `feat/B1-forms-leads-port`) |
+| B2 | ✅ done | agent | port Push Notifications PWA → bridge (commit 83cabd9 sur dev — branche `feat/B2-push-pwa-port`) |
+| B3 | ✅ done | agent | Hub contract HMAC (commit 4329e2a sur dev) |
+| C1 | ✅ done | agent | port composants UI → console/src/veridian/ (commit 10aea16 sur dev) |
+| C2 | ✅ done | agent | pages UI — dashboard.tsx + dashboard-tabs (forms/gsc/push) dans console/src/veridian/pages/ |
+| C3 | ✅ done | agent | onboarding wizard — welcome.tsx + check-tracker (commit 09d1680) |
+| D1 | 🟡 PR ouverte | agent | URL shortener — PR #17 sur repo legacy veridian-analytics (à merger) |
+| D2 | ⏳ pending | — | migration 5 clients — scripts à préparer (PAS de migration prod réelle sans go Robert) |
+| UI-INTEGRATION | ✅ done | agent | dashboard Veridian intégré (commit 3381e10) |
+| E1 | ✅ done | agent | démo publique demo-analytics.veridian.site (api/src/demo + branding) |
+| CI-HUSKY | ✅ done | agent | husky ultra-strict + tests intégration réels T2-T5 (commit 2724f77) |
 
 Légende status : ⏳ pending | 🚧 in_progress | ✅ done | ❌ blocked
+
+---
+
+## 🏁 PHASE FINITION (2026-05-22 — après remise à plat)
+
+Tout le code du sprint est dans `origin/staging` (13 commits ahead of `main`).
+La branche `dev` a été consommée (promue dev→staging) puis supprimée — normal.
+
+**RÈGLE ABSOLUE remise à plat** : aucun build/test/install en local. Tout sur
+dev-pub ou CI GitHub Actions. Cf memory [[feedback_no_local_docker_build]].
+
+### Reste à finir
+
+| # | Tâche | Détail |
+|---|---|---|
+| F1 | Fix CI `Staging CI/CD` | Manque `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT` dans le step "Compose config check" de `.github/workflows/staging-deploy.yml` (job quick-checks, ~ligne 89). 3 lignes YAML. |
+| F1 | Promo `staging → main` | Une fois `Staging CI/CD` vert : merge ff-only staging→main, déclenche deploy prod du sprint complet. |
+| F2 | D2 — scripts migration | Écrire + tester les scripts de migration des 5 clients. NE PAS migrer les vrais clients (décision Robert séparée). |
+| — | D1 PR #17 | URL shortener sur repo legacy `veridian-analytics` — à merger (décision Robert). |
