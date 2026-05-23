@@ -4,10 +4,137 @@
 > Worktree local : `~/Bureau/veridian-platform-analytics/`
 > Dossier renommé possible : `~/Bureau/veridian-analytics/`
 
+---
+
+## 🎯 VISION ANALYTICS — figée 2026-05-23 par Robert
+
+> Cette section est la **source de vérité scope** pour analytics-engine.
+> Lecture obligatoire avant tout ticket touchant à analytics.
+> Toute proposition contradictoire = remonter à Robert AVANT d'agir.
+
+### Stack cible
+
+L'app future qui sera commercialisée vit dans le repo **`veridian-analytics-engine`**
+(fork staminads — Vite + TanStack Router + AntDesign + bridge Express + ClickHouse + Postgres).
+
+### Repo legacy `veridian-analytics` — CONDAMNÉ À MORT à terme
+
+Robert le 2026-05-23 : *"on va dégager le repo legacy à terme sois pas timide"*.
+
+Ce repo `veridian-analytics` (Next.js / Auth.js / Prisma / Postgres) n'est PAS
+juste "en gel feature". Il est en **fin de vie programmée**.
+
+**Conditions de dépose** (toutes doivent être vraies) :
+1. Les 5 clients existants ont migré vers `veridian-analytics-engine` (cf
+   ticket `D2-migrate-5-clients.md` — scripts livrés, exécution en attente)
+2. Le DNS `analytics.app.veridian.site` (legacy) est basculé ou retiré
+   au profit de `analytics-engine.app.veridian.site` (engine)
+3. Hub côté provisioning a coupé tout appel vers le bridge legacy
+   (`Christ-Roy/veridian-hub/lib/analytics/*` — vérifier)
+4. URL shortener `lnk.veridian.site` (ticket D1) déplacé vers engine OU
+   externalisé (Cloudflare Workers, par ex.) OU dégagé si Robert n'en veut
+   plus
+
+**Quand toutes ces conditions sont vraies → archive + remove du repo** :
+- Tag `legacy-final-snapshot` posé sur le dernier commit
+- Stack Dokploy `compose-synthesize-virtual-transmitter-i9bv43` détruite
+- DNS retiré
+- Repo GitHub passé en archive (read-only)
+- Worktree local supprimé
+
+**Donc pour ce CLAUDE.md** : tout ce qui suit cette section décrit le legacy
+condamné. Lis-le si tu maintiens du code legacy ponctuel (bug critique chez un
+client pas encore migré). Sinon → **ignore et travaille sur `veridian-analytics-engine`**.
+
+Pas de nouvelle feature, pas de refactor "propre", pas d'investissement ici.
+On laisse le legacy mourir tranquille pendant que les clients migrent.
+
+### Scope final commercialisable — 3 features et c'est TOUT
+
+1. **Visiteurs uniques + analytics natif staminads** — dashboard `/workspaces/$wsId/`
+   et toutes les pages staminads vanille (Live, Explore, Goals, Filters,
+   Annotations, Settings). On NE refait PAS ce que staminads fait déjà bien.
+
+2. **Calls — téléphonie OVH** : connecter OVH dans Settings, le bridge pull
+   les call logs, sous-route native `/workspaces/$wsId/calls`. Matching
+   appel ↔ visiteur via Lead.phone.
+
+3. **Search Console — bonus SEO** : connecter Google Search Console dans
+   Settings, le bridge pull les data GSC, sous-route native
+   `/workspaces/$wsId/search-console`. Affiche : **top mots-clés recherche,
+   ranking pages, indexation des pages** + dashboard performance natif.
+
+**Et c'est tout.** Tout le reste qui a été porté du legacy = à débrancher.
+
+### Features explicitement HORS scope (à débrancher ou archiver)
+
+| Feature livrée pendant le sprint | Décision Robert |
+|---|---|
+| **Score Veridian global** (composant hero) | ❌ Débrancher → `_optional-features/`. Pas dans le pricing. |
+| **Shadow marketing blocks** (CTA upsell sur services inactifs) | ❌ Débrancher → `_optional-features/`. |
+| **Locked service page** (paywall feature) | ❌ Débrancher → `_optional-features/`. |
+| **Sous-route custom Veridian dashboard** (`/workspaces/$wsId/veridian`) | ❌ Supprimer. L'utilisateur reste sur le dashboard staminads natif. |
+| **Forms ingestion + Lead dedup + LeadSession** (ticket B1) | ❌ **SUPPRIMER** — bridge `src/forms/` drop, tables Prisma drop, endpoint `/api/ingest/form` retiré, UI retirée. Les sites client utilisent les **goals staminads natifs** (`event: form_submission`) comme tous les autres analytics. |
+| **PWA + Push notifications** (ticket B2, VAPID, service worker) | 📦 **ARCHIVER** — code déplacé sous `_archive/`, aucune entrée UI, ENV `VAPID_*` retirée des composes. Pas de suppression DB (tables conservées au cas où). |
+| **Page admin Robert** (legacy `app/admin/page.tsx`) | ❌ NE PAS PORTER. Pas besoin d'admin global en V1. |
+
+### Conséquences techniques
+
+- **Build/CI** : on n'embarque plus `web-push` dans le bridge. Les checks Trivy passent plus vite.
+- **Tests E2E** : `tests/e2e/03-forms-leads/`, `tests/e2e/04-push-pwa/` supprimés.
+  Pas de specs maintenues sur des features qu'on ne commercialise pas.
+- **Démo publique** (`demo-analytics.veridian.site`) : reflète le scope final.
+  Pas de tabs Forms/Push visibles. Pas d'onglet "Veridian" custom.
+  La démo montre **uniquement** ce qui sera vendu (visiteurs uniques + Calls + GSC).
+- **Tunnel `veridian.*.{workspaceId}.tsx`** : supprimé. Les features Veridian vivent
+  dans les sous-routes natives `workspaces/$workspaceId/{calls,search-console,welcome}.tsx`
+  intégrées au layout staminads (nav + breadcrumbs + workspace selector + AssistantPanel).
+
+### Langue : français par défaut
+
+L'app **commercialisée en France pour des clients français**. Toute la console
+est en **français** (in-place, pas de système i18n) :
+- HTML `lang="fr"`
+- Vouvoiement par défaut
+- Accents préservés (à, é, è, ç, ô, ï…)
+- Anglicismes acceptés uniquement pour noms propres (Analytics, Search Console,
+  GSC, URL, API, HMAC)
+- Format date `dd/MM/yyyy HH:mm`, virgule décimale française pour les chiffres
+
+Pas de toggle EN/FR dans l'UI (= simplifie). Si Robert décide d'ouvrir à
+l'international plus tard, on ajoute un i18n setup à ce moment-là.
+
+### Hygiène code
+
+- **ZÉRO build local** : les builds (`npm install`, `vite build`, `vitest`,
+  `playwright install`, `docker build`) explosent la RAM de la machine de Robert
+  (7.6Gi). Tout build/test → CI GitHub Actions ou dev-pub via SSH. Cf memory
+  `feedback_no_local_docker_build` (durcie 2026-05-22).
+- **Sous-agents en Opus uniquement** (`model: "opus"`) — cf memory
+  `feedback_subagents_opus_only`.
+- **Husky pre-push ULTRA-STRICT** : JAMAIS `--no-verify`.
+- **Worktree isolé strict** : ne jamais travailler dans le checkout principal
+  partagé. Cf memory `feedback_never_touch_other_agents` et incident 2026-05-22
+  où 2 agents se sont écrasés mutuellement.
+
+### Anti-régression : ce qui ne doit pas être perdu
+
+Robert a explicitement formulé cette vision le 2026-05-23 après audit du sprint
+giga. Si un futur agent re-porte score/shadow/locked/forms/push parce qu'il
+trouve les tickets en `_optional-features/` ou `_archive/` → **erreur**. Ces
+features sont **désactivées commercialement**, pas en attente de réactivation
+automatique. Toute réactivation = décision business Robert.
+
+---
+
 ## Ce que c'est
 
 Dashboard analytics + SEO multitenant pour les sites Veridian.
 Stack Next.js 15 / Auth.js v5 / Prisma 6+ / Postgres / Vitest / Playwright.
+
+**Note** : la stack décrite ci-dessus concerne le repo **legacy** `veridian-analytics`.
+La stack cible commercialisée est dans `veridian-analytics-engine` (cf section
+VISION ci-dessus).
 
 ## Avant de toucher quoi que ce soit
 
