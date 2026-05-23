@@ -55,16 +55,41 @@ On laisse le legacy mourir tranquille pendant que les clients migrent.
    et toutes les pages staminads vanille (Live, Explore, Goals, Filters,
    Annotations, Settings). On NE refait PAS ce que staminads fait déjà bien.
 
-2. **Calls — téléphonie OVH** : connecter OVH dans Settings, le bridge pull
-   les call logs, sous-route native `/workspaces/$wsId/calls`. Matching
-   appel ↔ visiteur via Lead.phone.
+2. **Calls — téléphonie OVH** : connecter OVH dans **Settings → onglet VoIP**
+   (PAS de page dédiée). Le bridge pull les call logs ET pousse chaque appel
+   comme event staminads `phone_call` (custom event natif). Du coup les appels
+   apparaissent automatiquement dans **Live, Explore, Goals, Annotations**
+   sans page custom.
 
 3. **Search Console — bonus SEO** : connecter Google Search Console dans
-   Settings, le bridge pull les data GSC, sous-route native
-   `/workspaces/$wsId/search-console`. Affiche : **top mots-clés recherche,
-   ranking pages, indexation des pages** + dashboard performance natif.
+   **Settings → onglet Search Console** (PAS de page dédiée). Le panel
+   Settings affiche tout en dense : OAuth connect, statut, mots-clés top,
+   pages top, ranking, mini-graphe time-series, indexation. **C'est la SEULE
+   place où GSC vit** — Settings = dashboard + config en un seul panel.
 
 **Et c'est tout.** Tout le reste qui a été porté du legacy = à débrancher.
+
+### Règle d'architecture UI (figée 2026-05-23)
+
+Robert : *"les features Veridian doivent être proprement mises dans l'UI de
+base pas dans des pages à part — à la rigueur on peut avoir des onglets dans
+settings liés aux features mais c'est tout"*.
+
+**Conséquence stricte** :
+- ❌ AUCUNE sous-route dédiée Veridian dans `console/src/routes/_authenticated/workspaces/$workspaceId/*`
+  (PAS de `calls.tsx`, PAS de `search-console.tsx`, PAS de `veridian.tsx`)
+- ❌ AUCUN lien dans la nav staminads pour pointer sur du custom Veridian
+- ✅ SEULES extensions autorisées :
+  - **Onglets/sections dans Settings** (extension du `z.enum section`)
+  - **Events staminads custom** (le bridge pousse des events dans
+    `staminads.events` → s'affichent automatiquement dans Live/Explore/Goals
+    sans code UI custom)
+  - **Pages d'onboarding** (`welcome.tsx`) — exception tolérée car
+    workflow user, mais elle reste minimaliste
+
+Si un futur agent propose de créer une sous-route Veridian dédiée → **erreur**.
+Lui rappeler cette règle. Tout passe par les mécanismes natifs staminads ou
+par des onglets Settings.
 
 ### Features explicitement HORS scope (à débrancher ou archiver)
 
