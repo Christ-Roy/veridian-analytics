@@ -132,7 +132,11 @@ Tous les findings remontés dans `../UI-POLISH.md` (pas fixés ici sauf trivial 
 
 ## Status
 
-⏳ pending
+✅ done 2026-05-23 — intégration native staminads via refonte `refactor/ui-native-pure` (PR #28 → main `43aa4d4`).
+
+Les pages dashboard Veridian (forms tab, gsc tab, push tab custom) ont été **abandonnées** au profit de la stack vanille staminads (Live, Explore, Goals, Filters, Annotations, Settings). Settings est enrichi de 2 onglets (`?section=voip` et `?section=search-console`) avec panels denses.
+
+Cf CLAUDE.md section VISION + ticket `2026-05-24-explore-event-name-phone-call.md` pour la suite (dimension event_name).
 
 ## Notes pour l'agent qui pick
 

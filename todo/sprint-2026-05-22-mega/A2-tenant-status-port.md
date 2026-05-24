@@ -56,9 +56,9 @@ Pour la V1 :
 ## Tests obligatoires
 
 `veridian-bridge/tests/tenant-status.test.ts` :
-- [ ] Workspace vide → tous services inactifs
-- [ ] Workspace 1500 PV → `active = ['pageviews']`, inactive = les 5 autres
-- [ ] Endpoint reject sans Bearer → 401
+- [x] Workspace vide → tous services inactifs
+- [x] Workspace 1500 PV → `active = ['pageviews']`, inactive = les 5 autres
+- [x] Endpoint reject sans Bearer → 401
 
 ## Husky / coverage
 
@@ -71,7 +71,17 @@ Pour la V1 :
 
 ## Status
 
-⏳ pending
+✅ done
+
+Livré 2026-05-21 sur `veridian-analytics-engine` :
+- Branche : `feat/A2-tenant-status-port` (commit `52ee4a7`)
+- Merged ff sur `dev`, push origin pre-push hook vert (61 tests bridge)
+- Fichiers : `veridian-bridge/src/tenant-status.ts`,
+  `veridian-bridge/tests/tenant-status.test.ts`,
+  endpoint + import dans `veridian-bridge/src/app.ts`,
+  bloc `tenant-status` dans `test-coverage-map.yaml`.
+- 5 tests passent : workspace vide / 1500 PV / no Bearer 401 / wrong key 403 /
+  path workspaceId vide → 404 Express.
 
 ## Notes pour l'agent qui pick
 

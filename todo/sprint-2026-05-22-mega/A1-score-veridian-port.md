@@ -56,11 +56,11 @@ Bridge a déjà `STAMINADS_URL` + `STAMINADS_ADMIN_PASSWORD` pour s'authentifier
 ## Tests obligatoires
 
 `veridian-bridge/tests/score.test.ts` (node:test) avec `fake-staminads` helper :
-- [ ] Workspace sans data → score 0, label "À démarrer", activeServices vide
-- [ ] Workspace 1500 pageviews, 0 forms → score 30, label "À améliorer"
-- [ ] Workspace pageviews + forms + gsc mocked → score 70, label "Très bon"
-- [ ] Endpoint reject sans Bearer auth → 401
-- [ ] Endpoint reject avec mauvais workspace → 404
+- [x] Workspace sans data → score 0, label "À démarrer", activeServices vide
+- [x] Workspace 1500 pageviews, 0 forms → score 30, label "À améliorer"
+- [x] Workspace pageviews + forms + gsc mocked → score 70, label "Très bon"
+- [x] Endpoint reject sans Bearer auth → 401
+- [x] Endpoint reject avec mauvais workspace → 404
 
 ## Husky / coverage
 
@@ -77,7 +77,23 @@ Ajouter dans `test-coverage-map.yaml` :
 
 ## Status
 
-⏳ pending
+✅ done
+
+Merged on `dev` at SHA `1c022d8` (2026-05-21). 19 tests pass
+(pondération + labels + helper + endpoint integration). Full bridge test
+suite green (56 tests after gsc placeholders removed from worktree).
+
+Files shipped :
+- `veridian-bridge/src/score.ts` (pure lib : `computeScore`, `scoreLabel`,
+  `buildCountsFromStaminadsRows`, `KNOWN_SERVICES`, `SERVICE_WEIGHTS`)
+- `veridian-bridge/src/app.ts` : new endpoint
+  `GET /api/admin/tenant/:workspaceId/score` (Bearer auth)
+- `veridian-bridge/tests/score.test.ts`
+- `test-coverage-map.yaml` : new entry for `score.ts`
+
+V1 keeps calls/gsc/ads/pagespeed at 0 with explicit TODO markers (A4 will
+plug GSC counts when its `GscDaily` bridge table lands, B1 will plug
+proper form counts via FormSubmission bridge).
 
 ## Notes pour l'agent qui pick
 

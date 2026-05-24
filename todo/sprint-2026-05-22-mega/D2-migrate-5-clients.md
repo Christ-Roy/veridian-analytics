@@ -109,7 +109,32 @@ Configurer alerte Telegram si écart > 10% pendant 3 jours consécutifs sur n'im
 
 ## Status
 
-⏳ pending
+✅ scripts livrés (migration réelle = décision Robert) — SHA staging `7d50784`
+
+**Livré (agent F2, 2026-05-22)** dans `veridian-analytics-engine` :
+
+- **Endpoint bridge** `POST /api/admin/provision-existing-tenant`
+  (`veridian-bridge/src/admin/provision-existing-tenant.ts` + wiring `index.ts`) :
+  adopte un site legacy en réutilisant le `siteKey`, idempotent (`created:false`
+  si déjà adopté).
+- **Scripts** `scripts/migration/` :
+  - `migrate-existing-tenants.ts` — provisionne les 5 workspaces + génère
+    `out/snippets-by-site.md` (snippets dual-tracking).
+  - `migrate-gsc-history.ts` — import historique GSC (optionnel).
+  - `migrate-forms-history.ts` — import historique FormSubmission/Lead/LeadSession.
+  - `migration-diff-alert.ts` + `cron/` (systemd) — alerte Telegram écart
+    > 10 % / 3 jours.
+  - `lib/` — logique pure (mapping, snippets, seuil, parsing flags).
+  - Dry-run par défaut, `--apply` explicite requis. Garde anti-placeholder
+    `siteKey`.
+- **Tests** : 61 tests unitaires `veridian-bridge/tests/migration/` —
+  suite bridge 380/380 verte (typecheck + tests + CVE vérifiés sur dev-pub).
+- **Doc** : `scripts/migration/README.md` + `CHECKLIST.md` (checklist
+  pré-migration : snapshots, résolution siteKey, dry-run, comm clients).
+
+**NON fait (volontaire — décision Robert)** : la migration RÉELLE des 5
+clients n'a PAS été exécutée. Scripts prêts, le jour J = dérouler
+`scripts/migration/CHECKLIST.md`.
 
 ## Notes pour l'agent qui pick
 

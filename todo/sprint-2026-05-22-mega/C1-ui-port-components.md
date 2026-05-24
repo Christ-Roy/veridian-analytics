@@ -77,7 +77,24 @@ Le dossier `components/gsc/` (avec ses sous-composants) est plus complexe — il
 
 ## Status
 
-⏳ pending
+✅ done — 2026-05-21 (commit `10aea16` sur `dev`, branche `feat/C1-ui-port-components`)
+
+### Livré
+
+- **Composants** (`console/src/veridian/`) : `service-score-block.tsx`, `shadow-marketing-block.tsx`, `locked-service-page.tsx`, `sparkline.tsx`, `impersonation-banner.tsx`, `pwa-register.tsx`
+- **Primitives shadcn** (`console/src/veridian/ui/`) : `card.tsx`, `button.tsx`, `badge.tsx`
+- **Utils** : `utils.ts` (cn, formatNumber, formatPercent) + `types.ts` (SHADOW_MARKETING, buildMailto, ServiceKey)
+- **PWA stub V1** : `console/public/sw.js` (adapté pour assets Vite `/assets/`), `console/public/pwa-install.js`, `pwa-register.tsx` (B2 finalisera push)
+- **Tests Vitest 3 + RTL 16** : 5 fichiers / 16 tests verts dans `console/src/veridian/__tests__/`
+- **test-coverage-map.yaml** : section `# ─── CONSOLE VERIDIAN ───` ajoutée
+- **`npm run build` console : OK** — AntDesign upstream non cassé (Tailwind 4 déjà actif globalement, palette shadcn cohabite)
+
+### Notes
+
+- Pas besoin de toucher `console/vite.config.ts` : Tailwind 4 est déjà branché par l'upstream
+- Pas de wrapper `veridian-scope` introduit : la palette shadcn (`bg-primary`, `border-border`, `text-muted-foreground`…) coexiste proprement avec AntDesign — vérifié par build
+- Service Worker adapté pour Vite (`/assets/` au lieu de `/_next/static/`) — la pile push complète (subscribe + persistance backend) reste B2
+- 16 tests / 5 fichiers couvrent rendu, formats Intl fr-FR, build mailto:, edge cases (data vide, impersonating=false, fallback siteDomain)
 
 ## Notes pour l'agent qui pick
 
