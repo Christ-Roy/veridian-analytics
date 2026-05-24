@@ -54,3 +54,22 @@ Sur tenant client réel :
 
 Idem pour la sidebar Settings que je n'ai pas pu tester (page blanche) — probablement
 aussi en EN avec sections "Members / Goals / Funnels / API Keys".
+
+## Status
+
+✅ FIXÉ (partie démo) 2026-05-23 par `fix/demo-veridian-bugs` (engine
+SHA `0ef2754`, PR
+[#2](https://github.com/Christ-Roy/veridian-analytics-engine/pull/2)).
+
+Le gate `isDemo` rend désormais un panneau FR « Compte non disponible
+en démo » avec CTA mailto. Plus aucun fetch `api.auth.me` ne part en
+mode démo.
+
+Reste hors scope (à traiter dans un sprint i18n dédié) : traduire la
+page `/account` réelle (non-démo) FR + traduire la sidebar Settings
+(BUG-05).
+
+Changement :
+
+- `console/src/routes/_authenticated/workspaces/$workspaceId/account.tsx` :
+  gate `isDemo` après les hooks → panneau preview + CTA.

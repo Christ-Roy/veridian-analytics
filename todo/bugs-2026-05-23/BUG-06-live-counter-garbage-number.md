@@ -77,3 +77,8 @@ Le nombre `099644222211` commence par `0` puis grimpe — cohérent avec un comp
    - Si interval qui s'accumule : ajouter cleanup `() => clearInterval(id)`
 4. **Test de régression** : E2E qui charge `/live`, attend 5s, et vérifie que le compteur
    `live now` matche `/^\d{1,4}$/` (1 à 4 chiffres max). Bloquer la CI si > 4 chiffres.
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

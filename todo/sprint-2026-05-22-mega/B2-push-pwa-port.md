@@ -101,7 +101,19 @@ Stockage dans `~/credentials/.all-creds.env` (search `VAPID_`). Si déjà prése
 
 ## Status
 
-⏳ pending
+📦 ARCHIVED 2026-05-23 par cleanup-veridian-scope (PR #5 → main `a5a5189`).
+
+Scope final Robert 2026-05-23 : PWA + push notifications hors V1 commercialisable. Code conservé sous `_archive/` (bridge `_archive/push/`, console `_archive/`, tests `_archive/`). DB tables `PushSubscription` + `PushNotification` **conservées** (pas de drop destructif). ENV `VAPID_*` retirées des composes.
+
+Réactivation = décision business Robert (cf CLAUDE.md VISION).
+
+Livré : modèles Prisma `PushSubscription` + `PushNotification` + migration
+`20260521000002_add_push_subscriptions` · lib `src/push/index.ts` (subscribe /
+unsubscribe / sendNotificationToTenant / getVapidPublicKey + cleanup 410 Gone) ·
+6 endpoints `src/push/routes.ts` (subscribe / unsubscribe / vapid-key publics +
+admin send / subscribers / history) · ENV VAPID_* documentées dans `.env.example`
+(clés legacy réutilisées via Dokploy ENV — non commitées) · 31 tests push verts ·
+`test-coverage-map.yaml` à jour. Suite bridge totale : 222 tests verts.
 
 ## Notes pour l'agent qui pick
 

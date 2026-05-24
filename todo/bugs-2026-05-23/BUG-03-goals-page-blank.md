@@ -1,9 +1,43 @@
 # [BUG-03] Page /goals affiche une page blanche (zéro contenu rendu)
 
+> **Status** : ✅ FIXED (2026-05-23, SHA c54cd94 → merged main 703e99e)
 > **Sévérité** : 🔴 P0 (feature complètement morte sur la démo publique)
 > **Cible** : démo prod (probablement aussi staging et engine prod)
 > **URL exacte** : https://demo-analytics.veridian.site/workspaces/demo-apple/goals
 > **Détecté** : 2026-05-23
+
+## Résolution
+
+Cause racine : `TypeError: t.toFixed is not a function` dans GoalCard.tsx
+ligne 273 (`data.current.toFixed(2)` pour conversion_rate). Goals.tsx
+faisait `row.goals as number` — assertion TS mensongère, zéro coerce
+runtime. ClickHouse sérialise les agrégats en STRING dans le JSON.
+La string atteignait GoalCard et plantait.
+
+Le bug-hunter a interprété la page comme "blanche" — en réalité l'errorComponent du root rendait un Result Ant Design minuscule
+("Une erreur est survenue / t.toFixed is not a function / Retour au
+dashboard") = bodyLen 124. Pas un blank, mais visuellement équivalent.
+
+Même pattern que `cb02c61` (fix dashboard via toMetricNumber dans
+`dimension-utils.ts`) mais oublié sur la route Goals.
+
+### Fix
+
+- `toMetricNumber()` **exporté** depuis `console/src/lib/dimension-utils.ts`
+- `goals.tsx` : 16 sites de coerce via `toMetricNumber()` (summary, time-series,
+  previous map, conversion rate, sessions)
+- `GoalCard.tsx` : defensive `Number(data.current) || 0` avant `.toFixed`
+- E2E `tests/e2e/11-demo-public/demo-workspace-pages-not-blank.spec.ts` :
+  vérifie qu'au moins un heading rend sur chaque sous-page workspace de la
+  démo (régression future)
+
+### Vérification prod (Chrome MCP)
+
+`demo-analytics.veridian.site/workspaces/demo-apple/goals` rend :
+- H1 "Goals" + DateRangePicker + ComparisonPicker
+- 3 goals (`add_to_cart`, `checkout_start`, `purchase`) avec Count,
+  Conv. Rate, Value, Median + sparklines
+- bodyLen 650 (vs 124 avant) ; 0 erreur toFixed console.
 > **Reproduction** :
 > 1. Ouvrir https://demo-analytics.veridian.site/workspaces/demo-apple
 > 2. Cliquer sur "Goals" dans la nav
@@ -79,3 +113,13 @@ sous-pages workspace autres que dashboard/explore/live/annotations sont blanches
 4. **Test de régression** : `tests/e2e/workspace-pages-not-blank.spec.ts` qui visite
    /goals, /filters, /settings, /annotations, /explore, /live et assert
    `await expect(page.locator('h1, h2, h3')).toHaveCount({greaterThanOrEqual: 1})`
+
+## Status
+
+✅ FIXÉ 2026-05-23 par agent fix-blank-pages (PR #3 — commit `c54cd94` embarqué dans merge `703e99e`).
+
+**Cause** : `TypeError: t.toFixed is not a function` — `row.goals as number` mensonger dans `goals.tsx`, ClickHouse renvoie en string, crash dans `GoalCard` ligne 273 → AppErrorPage (mini-rendu, pas un vrai blank).
+
+**Fix** : `toMetricNumber()` exporté depuis `console/src/lib/dimension-utils.ts`, 16 sites coercés via `toMetricNumber()` dans `goals.tsx`, defensive `Number(data.current) || 0` dans `GoalCard`. Test E2E garde-fou ajouté `tests/e2e/11-demo-public/demo-workspace-pages-not-blank.spec.ts`.
+
+**Vérif live démo prod 2026-05-23** : `/workspaces/demo-apple/goals` → H1 "Objectifs" + 3 goal cards rendus.

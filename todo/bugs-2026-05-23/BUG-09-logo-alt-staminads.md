@@ -46,3 +46,8 @@ Si le logo en lui-même est encore le SVG staminads, le swap aussi (cf BUG-10 / 
 docs staminads links → c'est le même problème de fork pas nettoyé).
 
 **Lié** : BUG-08 (title HTML), BUG-10 (docs/issues links), BUG-13 (version v6.1.0).
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

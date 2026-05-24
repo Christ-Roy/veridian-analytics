@@ -59,3 +59,8 @@ export const BRAND = {
 ```
 
 **Lié** : BUG-08, BUG-09, BUG-13 — même série de bugs branding upstream pas nettoyé.
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

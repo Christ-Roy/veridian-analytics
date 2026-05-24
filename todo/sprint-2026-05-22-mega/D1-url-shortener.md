@@ -133,7 +133,14 @@ Guard : `requireAdmin()` server-side sur tous (cf. CLAUDE.md repo : CVE-2025-299
 
 ## Status
 
-⏳ pending
+🟡 PR ouverte 2026-05-22 — `feat/D1-url-shortener` sur repo legacy `veridian-analytics` (PR #17, agent D1). Pas mergée — règle CLAUDE.md repo legacy 'JAMAIS push direct sur main sans PR review' respectée.
+
+⚠️ Vu la **dépose programmée du legacy** (ticket `todo/2026-05-23-dispose-legacy-repo.md`) : décision business Robert à prendre :
+- (A) merger PR #17 et garder shortener sur legacy jusqu'à dépose, puis porter ailleurs
+- (B) merger PR #17 puis porter direct sur engine
+- (C) externaliser (Cloudflare Workers) ou abandonner
+
+À trancher avant la dépose legacy.
 
 ## Notes pour l'agent qui pick
 

@@ -1,5 +1,16 @@
 # Veridian Analytics
 
+> ## ⚠️ Repo en fin de vie (depuis 2026-05-23)
+>
+> L'app commercialisée est désormais **`veridian-analytics-engine`**
+> (fork staminads — Vite + TanStack Router + ClickHouse + bridge Express).
+> Ce repo est maintenu en hospice le temps de migrer les 5 clients
+> existants, puis sera archivé.
+>
+> **Pas de nouvelle feature ici.** Pas de refactor "propre". Pas de
+> Dependabot mergé. Voir `CLAUDE.md` §VISION pour les conditions de
+> dépose et la liste exhaustive du scope finalisé.
+
 SaaS multitenant analytics + dashboard SEO pour les sites Veridian.
 Extrait du monorepo `veridian-platform` le 2026-05-13.
 

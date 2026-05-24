@@ -81,3 +81,8 @@ staminads → Veridian. Le title est resté `Staminads` (la valeur upstream).
    `page.goto(url, {waitUntil: 'commit'})`)
 4. **Lié à** : BUG-09 (logo alt), BUG-10 (docs links staminads.com), BUG-13 (version v6.1.0)
    — ces 4 bugs sont la même nature : branding upstream pas nettoyé
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

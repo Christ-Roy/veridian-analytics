@@ -40,3 +40,15 @@ return <RegularUserMenu />
 ## Lié
 
 BUG-12 (page /account exposée sur démo).
+
+## Status
+
+✅ FIXÉ 2026-05-23 par `fix/demo-veridian-bugs` (engine SHA `0ef2754`,
+PR
+[#2](https://github.com/Christ-Roy/veridian-analytics-engine/pull/2)).
+
+Dans `console/src/routes/_authenticated/workspaces/$workspaceId.tsx`,
+le `Dropdown` (menu desktop) et le bloc Account/Logout (menu mobile)
+sont désormais conditionnés à `!isDemo`. En mode démo, le bouton
+utilisateur disparaît complètement — le `DemoBanner` global garde
+déjà le CTA « Demander un compte gratuit ».

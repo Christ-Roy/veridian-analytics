@@ -72,3 +72,8 @@ Idéalement : SSR/SSG de la landing pour avoir un FCP < 1s avec contenu déjà v
 - BUG-13 (version v6.1.0)
 
 Tous les 4 sont la même nature : fork upstream pas finalisé côté branding.
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

@@ -127,7 +127,19 @@ Une fois ce ticket livré, mettre à jour **dans `CONTRAT-HUB.md`** :
 
 ## Status
 
-⏳ pending
+✅ livré 2026-05-22 — branche `feat/B3-hub-contract-base` mergée sur `dev`
+
+**Livré** :
+- `veridian-bridge/src/hub-hmac.ts` (verifyHubHmac + hubHmacMiddleware + assertSkipHmacAllowed)
+- `veridian-bridge/src/paywall.ts` (requireActivePlan + isPlanActive + PaywallError(402))
+- `veridian-bridge/src/hub/store.ts` (TenantStore interface + InMemoryTenantStore — à substituer par PrismaTenantStore quand A4 mergé sur dev)
+- 3 endpoints : POST /api/tenants/provision, POST /api/tenants/attach-owner, GET /api/tenants/:id/health
+- 11 fichiers de tests (42 tests verts) dans `veridian-bridge/tests/hub/`
+- `.env.example` avec HUB_HMAC_SECRET + SKIP_HMAC
+- Ticket Hub posé : `veridian-hub/todo/2026-05-22-mark-analytics-hub-endpoints-livre.md`
+
+**Reste pour S3** : update-plan, suspend, resume, soft-delete, restore, purge,
+generateMagicLink (Pattern B), obfuscation field-level paywall V2.
 
 ## Notes pour l'agent qui pick
 

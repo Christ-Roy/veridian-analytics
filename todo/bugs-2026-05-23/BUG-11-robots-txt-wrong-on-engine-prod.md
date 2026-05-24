@@ -88,3 +88,8 @@ test('engine prod robots.txt disallows all', async ({ request }) => {
   expect(body).not.toContain('demo-analytics')
 })
 ```
+
+
+## Status
+
+FIXED 2026-05-23 par PR #1 fix/upstream-branding-cleanup (commit 9e0d123, merge staging 23f6edf, main 703e99e).

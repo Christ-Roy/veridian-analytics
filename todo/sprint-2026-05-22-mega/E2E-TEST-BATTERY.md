@@ -341,4 +341,62 @@ Pour chaque cible (staging, prod, démo prod, démo staging) :
 
 ## Status
 
-🟡 STANDBY — déclencheur `/e2e-test-battery` ou go explicite de Robert
+🟢 **Phase 1+2 LIVRÉES** — 2026-05-23 par agent E2E-BATTERY (Opus)
+
+**Repo cible** : `veridian-analytics-engine` (branche `feat/e2e-battery`)
+
+### Livré
+
+- ✅ Phase 1 — `tests/e2e/01-smoke/` (5 specs) :
+  - `healthcheck.spec.ts` (engine setup.status + bridge /health + shadow-marketing)
+  - `routes-reachable.spec.ts` (5 routes critiques, pas 5xx)
+  - `ssl-cert.spec.ts` (Let's Encrypt + ≥ 7 jours)
+  - `security-headers.spec.ts` (HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy)
+  - `console-clean.spec.ts` (pas d'erreur JS console + pas de 5xx XHR au boot)
+- ✅ Phase 2 — `tests/e2e/06-hub-contract/` (2 specs, 11 scenarios) :
+  - `hmac-rejection.spec.ts` (6 rejets : pas de sig, pas de ts, sig random, drift > 5min, body modifié, GET sans HMAC)
+  - `hmac-valid-provision.spec.ts` (3 tests valides : provision idempotent + attach-owner idempotent + tenant health — staging only)
+- ✅ Phase 2 — `tests/e2e/11-demo-public/` (4 specs) :
+  - `demo-accessible.spec.ts` (public-config, demo.login, workspace demo-apple charge)
+  - `demo-restricted-guards.spec.ts` (workspaces.create, users.create, api-keys.create tous bloqués)
+  - `demo-banner-cta.spec.ts` (banner [data-testid=demo-banner] visible + CTA mailto:)
+  - `demo-seed-reseed.spec.ts` (rejets sans/mauvais secret + re-seed valide demo-staging only)
+- ✅ Helpers : `targets.ts` (4 cibles), `api-client.ts`, `hub-hmac.ts` (signHubRequest + postSigned), `ssl.ts` (tls.connect), `retry.ts` (pollUntil)
+- ✅ Fixtures : `test-data.ts` (makeProvision/AttachOwner/Email/TenantId/WorkspaceName avec préfixe `e2e-test-` + TLD `.veridian-test.local`)
+- ✅ Config : `playwright.config.ts` (3 projets : chromium-desktop, chromium-mobile @mobile, webkit-desktop @webkit) + reporter HTML+junit+list en CI
+- ✅ Workflows CI : 4 actifs
+  - `e2e-smoke-staging.yml` — post Staging CI/CD, exécute 01+06-rejection (≤ 5min)
+  - `e2e-smoke-prod.yml` — post Prod CI/CD, exécute 01+06-rejection contre prod + 01+11 contre demo-prod (≤ 8min)
+  - `e2e-full-staging.yml` — nightly 02:00 UTC, exécute toute la batterie disponible avec HUB_HMAC_SECRET_ANALYTICS_STAGING + DEMO_SECRET_ANALYTICS_STAGING (≤ 35min)
+  - `e2e-visual-regression.yml` — hebdo Sunday 03:00 UTC, skip tant que 14-perf-regression vide
+- ✅ Doc `docs/E2E-TESTING.md` (vue d'ensemble, structure, conventions, debug, update goldens)
+
+### Reste à faire (Phase 3 + 4)
+
+- ⏳ Phase 3 — flows métier :
+  - `02-tracker-to-dashboard/` (event → ClickHouse → dashboard, polling)
+  - `03-forms-leads/` (POST /api/ingest/form → Lead dedup + visitorId + XSS sanitization)
+  - `09-dashboard-ui/` (UI render check : Score / Services / Boostez + empty state + mobile)
+- ⏳ Phase 4 — couverture exhaustive :
+  - `04-push-pwa/` (VAPID + subscribe + 410 expired)
+  - `05-gsc-oauth/` (OAuth begin/callback + sync + dashboard)
+  - `07-settings-credentials/` (credentials encrypt roundtrip + test-connection)
+  - `08-voip-calls/` (sync + matching visitorId + Calls tab)
+  - `10-onboarding-wizard/` (welcome flow + copy snippet + check-tracker live)
+  - `12-auth-flow/` (login brandé + forgot-password + 404 + impersonation)
+  - `13-cross-app/` (Hub→bridge réel + form→staminads event + Notifuse magic link)
+  - `14-perf-regression/` (Playwright snapshots + lighthouse-ci)
+  - `15-chaos/` (docker stop bridge/clickhouse/postgres-bridge + slow network)
+
+### Secrets GitHub Actions requis (à provisionner par Robert)
+
+| Secret | Usage | Statut |
+|---|---|---|
+| `HUB_HMAC_SECRET_ANALYTICS_STAGING` | provision/attach HMAC contre bridge staging | déjà présent (utilisé staging-deploy.yml) |
+| `DEMO_SECRET_ANALYTICS_STAGING` | re-seed démo staging via `?secret=` | déjà présent (utilisé demo deploy) |
+| `HUB_HMAC_SECRET_ANALYTICS` (prod) | **NE PAS utiliser en CI tests** — lecture seule debug | présent mais hors-CI |
+
+### SHA livraison
+
+Voir branche `feat/e2e-battery` du repo `veridian-analytics-engine`.
+

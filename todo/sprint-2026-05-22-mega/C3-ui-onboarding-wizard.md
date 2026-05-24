@@ -85,7 +85,7 @@ Si après 24h aucun event reçu, déclencher un email Notifuse :
 
 ## Status
 
-⏳ pending
+✅ done 2026-05-23 — sous-route native `workspaces/$wsId/welcome.tsx` livrée par agent UI-WELCOME-NATIVE (commits `287e58f` + `d621854`). Lien 'Démarrage' conditionnel dans nav staminads (visible uniquement si workspace pas encore actif). Redirect post-création workspace → welcome. Toutes les étapes du wizard (snippet tracker, check-tracker live) opérationnelles.
 
 ## Notes pour l'agent qui pick
 

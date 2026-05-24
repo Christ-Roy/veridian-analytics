@@ -122,7 +122,46 @@ Les ENV Google OAuth viennent de `~/credentials/.all-creds.env` (search `GSC_` o
 
 ## Status
 
-⏳ pending
+✅ livré 2026-05-21 — branche `feat/A4-gsc-integration-port` sur `veridian-analytics-engine`
+
+### Livraisons
+
+- **Schema Prisma bridge** (`veridian-bridge/prisma/schema.prisma`) :
+  - `Tenant` avec colonnes B3 incluses (hubTenantId, plan, planSource, status, apiKey, suspendedAt, softDeletedAt)
+  - `GscProperty` (oauthAccount JSON chiffré AES-256-GCM, ownership state)
+  - `GscDaily` (clicks/impressions/position/ctr × date/query/page/country/device/searchType)
+  - Migration initiale générée : `prisma/migrations/20260521000000_init_bridge_postgres/`
+- **Lib GSC** (`veridian-bridge/src/gsc/`) :
+  - `oauth.ts` : encrypt/decrypt AES-256-GCM, state HMAC, exchange/refresh/persist
+  - `sync.ts` : pull GSC API + upsert GscDaily + backoff exponentiel 429/5xx
+  - `query.ts` : DSL queryProperty + dashboardSummary (top queries/pages/timeseries)
+  - `routes.ts` : registerGscRoutes(app, deps) — module isolé (pas de modif `app.ts`)
+- **Infra compose** : `postgres-bridge` (postgres:16-alpine) ajouté à `compose/dev.yml` + `compose/base.yml`, healthcheck + bridge dependency
+- **Dockerfile** + `Dockerfile.dev` : `prisma generate` au postinstall, `prisma migrate deploy` au boot
+- **Tests (4 fichiers, 26 nouveaux tests)** :
+  - `tests/gsc-oauth-flow.test.ts` : encrypt round-trip, state HMAC + tamper, exchangeCode, refresh, persist, getAccessToken cache+refresh, oauthCallback
+  - `tests/gsc-sync.test.ts` : parseRow, pagination, retry 429/5xx, syncProperty insert/delete/filter, syncAllVerified
+  - `tests/gsc-query-parsing.test.ts` : buildWhereFragments whitelist, queryProperty totals/groupBy/limits, dashboardSummary
+  - `tests/integration/gsc-end-to-end.test.ts` : E2E full flow Express + FakePrisma + mock Google
+  - Total bridge tests : **125 ok / 125 pass** (99 existants + 26 GSC)
+- **test-coverage-map.yaml** : bloc complet ajouté (gsc/* + db/prisma.ts + schema.prisma)
+- **ENV** : `.env.example` créé avec GOOGLE_OAUTH_*, BRIDGE_DB_*, TOKEN_ENCRYPTION_KEY, GSC_* documentées
+
+### Coordination cross-tickets
+
+- **B3 (Hub contract base)** : modèle `Tenant` créé AVEC tous les champs Hub
+  (hubTenantId/plan/planSource/status/apiKey/suspendedAt/softDeletedAt). B3
+  n'a qu'à câbler les endpoints, pas à modifier le schema.
+- **C2 (UI GSC tab)** : endpoint `GET /api/admin/tenant/:workspaceId/gsc?days=30`
+  renvoie `{ property, totals, topQueries, topPages, timeseries }` prêt à
+  brancher dans le composant.
+
+### ENV Google OAuth
+
+Credentials Google Cloud Console récupérées depuis `~/credentials/.all-creds.env` :
+`GOOGLE_OAUTH_CLIENT_ID=792581780186-iag4kpqgn6d4iipv1rvrnloa7b925m5k.apps.googleusercontent.com`.
+Redirect URI à ajouter dans Google Cloud Console quand la prod sera live :
+`https://analytics-engine-bridge.staging.veridian.site/api/admin/gsc/oauth-callback`.
 
 ## Notes pour l'agent qui pick
 
@@ -133,3 +172,76 @@ Les ENV Google OAuth viennent de `~/credentials/.all-creds.env` (search `GSC_` o
 - L'OAuth Google nécessite que le redirect URI soit dans la console Google Cloud — créer un OAuth Client dédié bridge si nécessaire
 - Le bridge a maintenant un Prisma client — ajouter Prisma deps + generate au boot
 - **Migration data** : pour les tenants existants qui ont déjà GSC connecté côté legacy, prévoir un script `scripts/migrate-gsc-tenants.ts` qui dump `analytics.GscDaily` legacy → import dans bridge (cf. ticket D2)
+
+---
+
+## Update 2026-05-23 — UI-POLISH-CORE : sous-route Search Console livrée
+
+PR #4 mergée sur `staging` puis `main` (SHA `c3ec010`).
+
+Nouvelle sous-route native staminads à `/workspaces/$wsId/search-console` :
+
+- Fichier : `console/src/routes/_authenticated/workspaces/$workspaceId/search-console.tsx`
+- 5 composants legacy GSC portés depuis
+  `veridian-analytics/components/gsc/` vers `console/src/veridian/gsc/` :
+  - `performance-dashboard.tsx` (orchestrateur, simplifié — 4 fetchs
+    parallèles → 1 endpoint summary)
+  - `time-series-chart.tsx` (graphe SVG multi-courbes clicks/impressions/
+    ctr/position)
+  - `data-table.tsx` (tri client, filtre client)
+  - `kpi-tile.tsx` (4 tiles cliquables)
+  - `types.ts` (interfaces, METRIC_META, DIMENSION_META)
+- Endpoint consommé : `GET /api/admin/tenant/:wsId/gsc?days=N`
+  (handler `dashboardSummary` du bridge, livré par A4 — déjà en prod)
+- Plage temporelle : 7d / 28d / 90d (le legacy avait 16 mois — overkill
+  pour la V1 commerciale, on garde les 3 cas utiles)
+- Onglets : Mots-clés (top 50) + Pages (top 50) — drop SearchAppearance/
+  Country/Device legacy (moins utiles à un client PME local, peuvent être
+  réactivés plus tard)
+- Tous les états (loading/error/not-connected/data) couverts
+- Lien "Search Console" ajouté dans la nav staminads (desktop + mobile)
+
+### Indexation GSC — NON livrée
+
+Robert a demandé l'indexation des pages (indexed/excluded/discovered) en
+plus du tracking position/clics. **Pas livrée dans cette PR** : le bridge
+actuel n'expose pas l'API `urlInspection.index.inspect` de GSC. C'est un
+work à faire côté `veridian-bridge/src/gsc/query.ts` :
+
+1. Ajouter un helper qui appelle `urlInspection.index.inspect` pour les
+   top URLs (limite : 1 req par URL, quota strict côté Google)
+2. Persister le statut dans `GscDaily` ou un nouveau modèle `GscIndexStatus`
+3. Étendre `dashboardSummary` pour retourner un champ `indexStatus`
+4. Ajouter une carte dédiée côté console (tile « Pages indexées : 124 / 187 »)
+
+À ouvrir comme ticket bridge dédié (A4-V2-indexation). Pas bloquant pour
+la commercialisation V1 — les 4 métriques GSC standard (clicks, impressions,
+ctr, position) sont déjà beaucoup plus que ce que les clients PME ont
+aujourd'hui.
+
+### Audit Chrome MCP
+
+`https://demo-analytics.veridian.site/workspaces/demo-apple/search-console`
+en desktop 1440 et mobile 375 :
+- État not-connected affiché correctement (le tenant démo Apple n'a pas
+  de propriété GSC connectée)
+- Header staminads natif présent + hero FR « Search Console »
+- CTA « Connecter ma Search Console » fonctionnel (mailto)
+- Pas d'erreur console venant de notre code (toutes les erreurs sont des
+  extensions Chrome tierces sans rapport)
+
+---
+
+## ⚠️ Mise à jour 2026-05-24 — Section UI obsolète
+
+Depuis `refactor/ui-native-pure` (SHA `43aa4d4`, 2026-05-23) :
+- Les sous-routes dédiées `/workspaces/$wsId/calls` et `/workspaces/$wsId/search-console` ont été **supprimées**
+- Les features VoIP et GSC vivent maintenant **dans Settings** (`?section=voip` et `?section=search-console`)
+- Le lien nav "Appels" et "Search Console" a été retiré
+- Les appels VoIP sont poussés comme events staminads natifs `phone_call` → apparaissent dans Live/Explore/Goals automatiquement
+
+Donc toute la section "UI" de ce ticket décrit l'ancienne archi (page dédiée). La **partie bridge / endpoints** reste valable et est livrée. Voir aussi :
+- `todo/2026-05-24-explore-event-name-phone-call.md`
+- `todo/2026-05-24-gsc-disconnect-endpoints-bridge.md`
+- `todo/2026-05-24-verify-voip-events-in-live-explore.md`
+- `CLAUDE.md` section "Règle d'architecture UI (figée 2026-05-23)"

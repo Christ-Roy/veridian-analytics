@@ -81,3 +81,39 @@ endpoints soient livrés → 404 systématique.
 - `todo/sprint-2026-05-22-mega/A1-score-veridian-port.md`
 - `todo/sprint-2026-05-22-mega/A2-tenant-status-port.md`
 - `todo/sprint-2026-05-22-mega/A3-shadow-marketing-port.md`
+
+## Status
+
+✅ FIXÉ 2026-05-23 par `fix/demo-veridian-bugs` (engine SHA `0ef2754`, PR
+[#2](https://github.com/Christ-Roy/veridian-analytics-engine/pull/2)).
+
+Méthode retenue : court-terme « Coming soon » côté console plutôt que
+cabling bridge.
+
+Raison : tenter d'ajouter le service `bridge` au compose démo se heurte
+à 2 blocages architecturaux que l'agent a découverts en faisant le
+terrain :
+
+1. `auth.login` bridge → engine échoue sur la démo. `setupCompleted=true`
+   est atteint via le seed du `demo@veridian.site` mais aucun super-admin
+   classique n'existe avec un mot de passe utilisable. Le bridge boucle
+   au boot.
+2. Drift d'API : le bridge appelle `analytics.query` avec
+   `dateRange: { type: 'last_30_days' }` mais l'engine n'accepte que
+   `dateRange: { preset: 'previous_30_days' }`. Réponse 400 systématique
+   même avec un token valide.
+
+Les deux sont solvables (patch bridge + nouvelle image + bootstrap
+admin), mais c'est ~½ journée de boulot pour une démo. Le ticket
+autorise explicitement l'option « court terme = état Coming soon
+propre » — c'est ce qu'on ship.
+
+Changements :
+
+- `console/src/veridian/demo-coming-soon.tsx` : nouveau composant
+  preview brandé (Score / Services / Shadow Marketing) + CTA mailto.
+- `console/src/veridian/pages/dashboard.tsx` : gate `isDemo`
+  short-circuite tout fetch bridge.
+- `compose/demo.yml` : doc inline du choix.
+- Test vitest `console/src/veridian/__tests__/demo-coming-soon.test.tsx`
+  pour verrouiller le gate (aucun fetch ne part en démo).

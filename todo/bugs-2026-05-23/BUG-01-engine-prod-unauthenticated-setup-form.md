@@ -91,3 +91,34 @@ sur `/`) a recréé/reset une DB sans seed admin.
 
 **Logs à archiver** : check `docker logs analytics-engine-prod | grep -i 'admin\|setup\|bootstrap'`
 côté prod pour voir si quelqu'un a déjà tenté le bootstrap (timestamp, IP).
+
+## Status
+
+FIXÉ 2026-05-23 par hotfix manuel (agent HOTFIX-BUG-01).
+
+- **Méthode** : Option A — `curl POST https://analytics-engine.app.veridian.site/api/setup.initialize`
+  (la vraie route est `/api/setup.initialize`, PAS `/api/auth.setupAdmin` — celui-ci
+  n'existe pas, son 503 venait simplement du `SetupMiddleware` qui blackholait tout
+  `/api/*` non-exempté tant que `setup_completed != true` dans `system_settings`).
+- **DTO** : `{ email, name, password (>=8 chars) }` — cf `api/src/setup/dto/initialize.dto.ts`.
+- **Admin créé** : `admin@veridian.site` / mot de passe `ANALYTICS_ENGINE_PROD_STAMINADS_ADMIN_PASSWORD`
+  (32 chars, déjà dans `~/credentials/.all-creds.env`). User ID `06e2be49-96fb-42d1-97d2-a02aedb539c6`,
+  `is_super_admin=true`. Réponse 201 + JWT retourné.
+- **Vérif faille fermée** :
+  - `GET /api/setup.status` → `{"setupCompleted":true}` (avant : `false`)
+  - `POST /api/setup.initialize` (second appel attaquant) → `400 {"error":"Bad Request","message":"Setup has already been completed"}`
+  - `POST /api/auth.setupAdmin` → `404` (Nest "Cannot POST", plus de 503 setup_required)
+- **Login admin testé** : `POST /api/auth.login` → 201 + `access_token` + `is_super_admin:1`. OK.
+- **Credentials** : ajouté `ANALYTICS_ENGINE_PROD_STAMINADS_ADMIN_EMAIL=admin@veridian.site`
+  dans `~/credentials/.all-creds.env`, commentaire bootstrap consommé ajouté.
+
+### Suivi (anti-régression)
+
+- Ajouter un test E2E `tests/security/setup-not-publicly-accessible.spec.ts` qui assert
+  `POST /api/setup.initialize` → `400` et `GET /api/setup.status` → `{setupCompleted:true}`
+  en CI smoke prod (et staging après bootstrap équivalent).
+- Durcir le middleware en sprint sécu : exiger un `X-Setup-Token` header (loggé au boot
+  container) sur `/api/setup.initialize` même quand setup pas complet, pour bloquer le
+  race window entre `docker compose up` initial et le bootstrap par l'opérateur.
+- Vérifier que les autres environnements (staging, demo) ont aussi un admin bootstrappé
+  pour éviter la même faille.

@@ -9,3 +9,8 @@ out
 .vercel
 next-env.d.ts
 tsconfig.tsbuildinfo
+
+# Évaluation analytics tierces (ne pas committer)
+/_eval/
+/plausible/
+/staminads/

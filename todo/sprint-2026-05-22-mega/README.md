@@ -148,10 +148,11 @@ Les 10 agents en parallèle stricto sensu = non viable :
 | C2 | ✅ done | agent | pages UI — dashboard.tsx + dashboard-tabs (forms/gsc/push) dans console/src/veridian/pages/ |
 | C3 | ✅ done | agent | onboarding wizard — welcome.tsx + check-tracker (commit 09d1680) |
 | D1 | 🟡 PR ouverte | agent | URL shortener — PR #17 sur repo legacy veridian-analytics (à merger) |
-| D2 | ⏳ pending | — | migration 5 clients — scripts à préparer (PAS de migration prod réelle sans go Robert) |
+| D2 | ✅ done | agent F2 | scripts migration 5 clients livrés sur staging (SHA 7d50784) — migration prod réelle = décision Robert |
 | UI-INTEGRATION | ✅ done | agent | dashboard Veridian intégré (commit 3381e10) |
 | E1 | ✅ done | agent | démo publique demo-analytics.veridian.site (api/src/demo + branding) |
 | CI-HUSKY | ✅ done | agent | husky ultra-strict + tests intégration réels T2-T5 (commit 2724f77) |
+| U8 | ✅ done | agent U8 | page Settings tenant + credentials VoIP self-service (chiffrement AES-256-GCM) — staging SHA 1c716c6 (feature 55c3459). Fixes CI annexes : TOKEN_ENCRYPTION_KEY dans .env staging + bump timeout deploy 10→18min. |
 
 Légende status : ⏳ pending | 🚧 in_progress | ✅ done | ❌ blocked
 
@@ -169,7 +170,8 @@ dev-pub ou CI GitHub Actions. Cf memory [[feedback_no_local_docker_build]].
 
 | # | Tâche | Détail |
 |---|---|---|
-| F1 | Fix CI `Staging CI/CD` | Manque `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT` dans le step "Compose config check" de `.github/workflows/staging-deploy.yml` (job quick-checks, ~ligne 89). 3 lignes YAML. |
-| F1 | Promo `staging → main` | Une fois `Staging CI/CD` vert : merge ff-only staging→main, déclenche deploy prod du sprint complet. |
-| F2 | D2 — scripts migration | Écrire + tester les scripts de migration des 5 clients. NE PAS migrer les vrais clients (décision Robert séparée). |
+| F1 ✅ | Fix CI `Staging CI/CD` | **Livré.** 2 commits : (1) `da08c54` — ajout `VAPID_*` + `HUB_HMAC_SECRET` au step "Compose config check" de `staging-deploy.yml` ; (2) `98f58bc` — cause racine des annulations en série : staging est derrière Tailscale (`*.staging.veridian.site` → IP tailnet), les smokes étage 3/4/5 curl-aient depuis le runner GitHub (pas sur le tailnet) → smoke réécrit pour tourner via SSH sur dev-pub (`docker compose ps` + `docker exec`). `Staging CI/CD` **100% vert** sur `98f58bc` (run 26299971335). |
+| F1 ✅ | Fix CI `Prod CI/CD` | **Livré** (`37580e5` sur `staging`). Bug job-dependency : sur `workflow_dispatch`, `structural-gate` est skipped, `build` est gated `if: always()`, et les jobs en aval (trivy/deploy-prod/e2e) sans `if:` propre se faisaient skipper via le `success()` implicite. Ajout `if: !cancelled() && needs.*.result == 'success'` sur trivy-bridge/trivy-engine/deploy-prod/e2e-prod-smoke. |
+| F1 🔴 | Promo `staging → main` + deploy prod | **BLOQUÉ par GitHub Actions billing.** `main` est déjà à `98f58bc` (promo SSH-smoke faite). MAIS depuis ~17:00 UTC le 2026-05-22 tous les runs échouent en 2s sans runner : *"The job was not started because recent account payments have failed or your spending limit needs to be increased"*. → **Action Robert : GitHub → Settings → Billing & plans → relever le spending limit Actions / corriger le paiement.** Une fois débloqué : `Staging CI/CD` doit repasser vert sur `37580e5`, puis promo staging→main, puis `Prod CI/CD` déploie (deploy-prod câblé Dokploy `compose-synthesize-virtual-transmitter-i9bv43`). Le deploy prod du sprint n'a PAS encore eu lieu (run prod 26300502428 a buildé les images mais deploy-prod skippé — bug corrigé par `37580e5`). |
+| F2 ✅ | D2 — scripts migration | Scripts de migration des 5 clients livrés sur `staging` (SHA `7d50784`) : endpoint `provision-existing-tenant`, `scripts/migration/` (provisionning + dual-tracking + historique GSC/Forms + alerting), 61 tests, README + CHECKLIST. Migration réelle PAS exécutée (décision Robert). |
 | — | D1 PR #17 | URL shortener sur repo legacy `veridian-analytics` — à merger (décision Robert). |
