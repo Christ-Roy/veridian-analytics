@@ -1,20 +1,32 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-06-10 04:16 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-06-10
+> **Dernier run** : 2026-06-11 04:16 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-06-11
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 8 (avant filtrage)
+> **CVE bruts détectés** : 18 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **0 RED** — fix prioritaire
-- 🔴 **0 HIGH** — action recommandée cette semaine
+- 🔴 **1 HIGH** — action recommandée cette semaine
 - 🟡 **4 MEDIUM** — récap, pas urgent
-- 🟢 **2 NOISE** — annexe collapse
+- 🟢 **6 NOISE** — annexe collapse
 
-✅ **Rien d'urgent.** Quelques items MEDIUM à voir quand t'as 5 min.
+
+---
+
+## 🔴 HIGH — 1 CVE en 1 groupe
+
+### 1. `libssl3` + `libcrypto3` — 3.5.6-r0 → **3.5.7-r0** *(base image OS)*
+
+- **CVE** : `CVE-2026-45447` (HIGH/RCE)
+- **Type** : RCE
+- **Score max** : 37.5
+- **Title** : Issue summary: A specially crafted PKCS#7 or S/MIME signed message cou ...
+- **Source** : `ghcr.io/christ-roy/analytics:latest (alpine 3.23.4)`
+- **Fix** : rebuild image avec base image patchée — `libssl3` >= `3.5.7-r0`
 
 
 ---
@@ -51,15 +63,16 @@
 
 ---
 
-## 🟢 NOISE filtré (2 CVE)
+## 🟢 NOISE filtré (6 CVE)
 
 <details>
-<summary>Liste complète (2 groupes — clique pour déplier)</summary>
+<summary>Liste complète (3 groupes — clique pour déplier)</summary>
 
 | Package | Installed | Fix | CVE count | Max score |
 |---|---|---|---|---|
 | `next-auth` | 5.0.0-beta.25 | 5.0.0-beta.30 | 1 | 6 |
 | `brace-expansion` | 2.0.2 | 5.0.5 | 1 | 6 |
+| `libssl3` | 3.5.6-r0 | 3.5.7-r0 | 4 | 3.0 |
 
 </details>
 
