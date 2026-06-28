@@ -1,10 +1,10 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-06-26 04:16 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-06-26
+> **Dernier run** : 2026-06-28 04:16 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-06-28
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 20 (avant filtrage)
+> **CVE bruts détectés** : 21 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
@@ -12,7 +12,7 @@
 - 🚨 **0 RED** — fix prioritaire
 - 🔴 **0 HIGH** — action recommandée cette semaine
 - 🟡 **5 MEDIUM** — récap, pas urgent
-- 🟢 **8 NOISE** — annexe collapse
+- 🟢 **9 NOISE** — annexe collapse
 
 ✅ **Rien d'urgent.** Quelques items MEDIUM à voir quand t'as 5 min.
 
@@ -60,15 +60,16 @@
 
 ---
 
-## 🟢 NOISE filtré (8 CVE)
+## 🟢 NOISE filtré (9 CVE)
 
 <details>
-<summary>Liste complète (5 groupes — clique pour déplier)</summary>
+<summary>Liste complète (6 groupes — clique pour déplier)</summary>
 
 | Package | Installed | Fix | CVE count | Max score |
 |---|---|---|---|---|
 | `next-auth` | 5.0.0-beta.25 | 5.0.0-beta.30 | 1 | 6 |
 | `ua-parser-js` | 2.0.9 | 2.0.10 | 1 | 6 |
+| `@sigstore/core` | 2.0.0 | 3.2.1 | 1 | 6 |
 | `brace-expansion` | 2.0.2 | 5.0.5 | 1 | 6 |
 | `tar` | 7.5.11 | 7.5.16 | 1 | 6 |
 | `libssl3` | 3.5.6-r0 | 3.5.7-r0 | 4 | 3.0 |
