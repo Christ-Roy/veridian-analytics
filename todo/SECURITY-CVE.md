@@ -1,17 +1,17 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-07-01 04:15 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-01
+> **Dernier run** : 2026-07-02 04:16 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-02
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 21 (avant filtrage)
+> **CVE bruts détectés** : 22 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **0 RED** — fix prioritaire
 - 🔴 **0 HIGH** — action recommandée cette semaine
-- 🟡 **5 MEDIUM** — récap, pas urgent
+- 🟡 **6 MEDIUM** — récap, pas urgent
 - 🟢 **9 NOISE** — annexe collapse
 
 ✅ **Rien d'urgent.** Quelques items MEDIUM à voir quand t'as 5 min.
@@ -19,7 +19,7 @@
 
 ---
 
-## 🟡 MEDIUM — 5 CVE en 4 groupes
+## 🟡 MEDIUM — 6 CVE en 5 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -39,7 +39,16 @@
 - **Source** : `ghcr.io/christ-roy/analytics:latest (alpine 3.23.4)`
 - **Fix** : rebuild image avec base image patchée — `libssl3` >= `3.5.7-r0`
 
-### 3. `postcss` — 8.4.31 → **8.5.10**
+### 3. `sigstore` — 3.1.0 → **4.1.1**
+
+- **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
+- **Type** : Unclassified
+- **Score max** : 15
+- **Title** : sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced
+- **Source** : `Node.js`
+- **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
+
+### 4. `postcss` — 8.4.31 → **8.5.10**
 
 - **CVE** : `CVE-2026-41305` (MEDIUM/XSS)
 - **Type** : XSS
@@ -48,7 +57,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.10`)
 
-### 4. `ip-address` — 10.1.0 → **10.1.1**
+### 5. `ip-address` — 10.1.0 → **10.1.1**
 
 - **CVE** : `CVE-2026-42338` (MEDIUM/XSS)
 - **Type** : XSS
