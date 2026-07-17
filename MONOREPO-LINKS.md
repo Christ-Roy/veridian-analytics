@@ -15,7 +15,7 @@
 | Sprint GitOps (référence transverse) | `~/Bureau/SPRINT-GITOPS-VERIDIAN.md` (local) |
 | Standards CI/CD partagés (workflows réutilisables) | `veridian-platform/.github/workflows/_*.yml` |
 | Pattern blue-green Veridian | mémoire `project_blue_green_pattern` |
-| Configuration Dokploy + naming convention | mémoire `project_infra_pieges` + `runbooks/standards/dokploy-naming.md` |
+| Déploiement & infra (cluster Nomad — `nomad-v` / skill `/nomad`) | repo `~/nomad-veridian/` ; naming Dokploy historique dans `runbooks/standards/dokploy-naming.md` (Dokploy décommissionné 2026-07-10) |
 
 Worktree local du monorepo (read-only par convention) :
 `~/Bureau/veridian-platform-main/`
