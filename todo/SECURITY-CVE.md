@@ -1,25 +1,89 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-07-20 04:15 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-20
+> **Dernier run** : 2026-07-28 04:15 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-28
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 12 (avant filtrage)
+> **CVE bruts détectés** : 53 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
-- 🚨 **0 RED** — fix prioritaire
-- 🔴 **0 HIGH** — action recommandée cette semaine
-- 🟡 **5 MEDIUM** — récap, pas urgent
-- 🟢 **5 NOISE** — annexe collapse
-
-✅ **Rien d'urgent.** Quelques items MEDIUM à voir quand t'as 5 min.
+- 🚨 **1 RED** — fix prioritaire
+- 🔴 **7 HIGH** — action recommandée cette semaine
+- 🟡 **14 MEDIUM** — récap, pas urgent
+- 🟢 **13 NOISE** — annexe collapse
 
 
 ---
 
-## 🟡 MEDIUM — 5 CVE en 4 groupes
+## 🚨 RED — 1 CVE en 1 groupe
+
+### 1. `next-auth` — 5.0.0-beta.25 → **5.0.0-beta.32**
+
+- **CVE** : `GHSA-8fpg-xm3f-6cx3` (CRITICAL/Auth bypass)
+- **Type** : Auth bypass
+- **Score max** : 90
+- **Title** : Auth.js: Configuration errors can cause existence-based auth checks to fail open (auth object populated with an error)
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
+
+
+---
+
+## 🔴 HIGH — 7 CVE en 5 groupes
+
+### 1. `next` — 15.5.18 → **16.2.11**
+
+- **CVE** : `CVE-2026-64645` (HIGH/SSRF), `CVE-2026-64649` (HIGH/SSRF)
+- **Type** : SSRF
+- **Score max** : 45
+- **Title** : Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
+
+### 2. `@auth/core` — 0.37.2 → **0.41.3**
+
+- **CVE** : `GHSA-7rqj-j65f-68wh` (CRITICAL/Unclassified)
+- **Type** : Unclassified
+- **Score max** : 30
+- **Aussi affectés** (même CVE) : `next-auth`
+- **Title** : Auth.js: Email normalizer validates the address before Unicode normalization, allowing a homoglyph @ bypass
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up @auth/core` (jusqu'à >= `0.41.3`)
+
+### 3. `next-auth` — 5.0.0-beta.25 → **5.0.0-beta.32**
+
+- **CVE** : `GHSA-7rqj-j65f-68wh` (CRITICAL/Unclassified)
+- **Type** : Unclassified
+- **Score max** : 30
+- **Aussi affectés** (même CVE) : `@auth/core`
+- **Title** : Auth.js: Email normalizer validates the address before Unicode normalization, allowing a homoglyph @ bypass
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
+
+### 4. `postcss` — 8.4.31 → **8.5.18**
+
+- **CVE** : `CVE-2026-45623` (HIGH/Data leak), `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
+- **Type** : Data leak
+- **Score max** : 30
+- **Title** : PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.18`)
+
+### 5. `tar` — 7.5.11 → **7.5.19**
+
+- **CVE** : `CVE-2026-59873` (CRITICAL/DoS)
+- **Type** : DoS
+- **Score max** : 30
+- **Title** : tar: node-tar: Denial of Service via crafted gzip bomb
+- **Source** : `Node.js`
+- **Fix** : `pnpm up tar` (jusqu'à >= `7.5.19`)
+
+
+---
+
+## 🟡 MEDIUM — 14 CVE en 10 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -30,7 +94,54 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up picomatch` (jusqu'à >= `4.0.4`)
 
-### 2. `sigstore` — 3.1.0 → **4.1.1**
+### 2. `@auth/core` — 0.37.2 → **0.41.3**
+
+- **CVE** : `GHSA-xmf8-cvqr-rfgj` (HIGH/DoS), `GHSA-x445-f3h2-j279` (MEDIUM/CSRF)
+- **Type** : CSRF, DoS
+- **Score max** : 15
+- **Aussi affectés** (même CVE) : `next-auth`
+- **Title** : Auth.js: getToken() throws an uncaught exception on malformed Bearer authorization headers
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up @auth/core` (jusqu'à >= `0.41.3`)
+
+### 3. `next` — 15.5.18 → **16.2.11**
+
+- **CVE** : `CVE-2026-64641` (HIGH/DoS)
+- **Type** : DoS
+- **Score max** : 15
+- **Title** : Next.js: Denial of Service in App Router using Server Actions
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
+
+### 4. `next-auth` — 5.0.0-beta.25 → **5.0.0-beta.32**
+
+- **CVE** : `GHSA-xmf8-cvqr-rfgj` (HIGH/DoS), `GHSA-x445-f3h2-j279` (MEDIUM/CSRF)
+- **Type** : CSRF, DoS
+- **Score max** : 15
+- **Aussi affectés** (même CVE) : `@auth/core`
+- **Title** : Auth.js: getToken() throws an uncaught exception on malformed Bearer authorization headers
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
+
+### 5. `sharp` — 0.34.5 → **0.35.0**
+
+- **CVE** : `GHSA-f88m-g3jw-g9cj` (HIGH/Unclassified)
+- **Type** : Unclassified
+- **Score max** : 15
+- **Title** : sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up sharp` (jusqu'à >= `0.35.0`)
+
+### 6. `brace-expansion` — 2.0.2 → **5.0.8**
+
+- **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS)
+- **Type** : DoS
+- **Score max** : 15
+- **Title** : brace-expansion: Brace-expansion: Denial of Service due to exponential-time complexity
+- **Source** : `Node.js`
+- **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.8`)
+
+### 7. `sigstore` — 3.1.0 → **4.1.1**
 
 - **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -39,7 +150,16 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
 
-### 3. `postcss` — 8.4.31 → **8.5.10**
+### 8. `tar` — 7.5.11 → **7.5.18**
+
+- **CVE** : `CVE-2026-59874` (HIGH/DoS)
+- **Type** : DoS
+- **Score max** : 15
+- **Title** : tar: Node-tar: Denial of Service via malformed tar archive header
+- **Source** : `Node.js`
+- **Fix** : `pnpm up tar` (jusqu'à >= `7.5.18`)
+
+### 9. `postcss` — 8.4.31 → **8.5.10**
 
 - **CVE** : `CVE-2026-41305` (MEDIUM/XSS)
 - **Type** : XSS
@@ -48,7 +168,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.10`)
 
-### 4. `ip-address` — 10.1.0 → **10.1.1**
+### 10. `ip-address` — 10.1.0 → **10.1.1**
 
 - **CVE** : `CVE-2026-42338` (MEDIUM/XSS)
 - **Type** : XSS
@@ -60,18 +180,19 @@
 
 ---
 
-## 🟢 NOISE filtré (5 CVE)
+## 🟢 NOISE filtré (13 CVE)
 
 <details>
-<summary>Liste complète (5 groupes — clique pour déplier)</summary>
+<summary>Liste complète (6 groupes — clique pour déplier)</summary>
 
 | Package | Installed | Fix | CVE count | Max score |
 |---|---|---|---|---|
+| `next` | 15.5.18 | 16.2.11 | 5 | 6 |
 | `next-auth` | 5.0.0-beta.25 | 5.0.0-beta.30 | 1 | 6 |
 | `ua-parser-js` | 2.0.9 | 2.0.10 | 1 | 6 |
 | `@sigstore/core` | 2.0.0 | 3.2.1 | 1 | 6 |
 | `brace-expansion` | 2.0.2 | 5.0.5 | 1 | 6 |
-| `tar` | 7.5.11 | 7.5.16 | 1 | 6 |
+| `tar` | 7.5.11 | 7.5.21 | 4 | 6 |
 
 </details>
 
