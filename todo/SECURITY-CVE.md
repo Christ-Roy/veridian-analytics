@@ -1,8 +1,8 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-07-28 04:15 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-28
+> **Dernier run** : 2026-07-29 04:15 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-29
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
 > **CVE bruts détectés** : 53 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
@@ -10,8 +10,8 @@
 ## TL;DR
 
 - 🚨 **1 RED** — fix prioritaire
-- 🔴 **7 HIGH** — action recommandée cette semaine
-- 🟡 **14 MEDIUM** — récap, pas urgent
+- 🔴 **6 HIGH** — action recommandée cette semaine
+- 🟡 **15 MEDIUM** — récap, pas urgent
 - 🟢 **13 NOISE** — annexe collapse
 
 
@@ -31,7 +31,7 @@
 
 ---
 
-## 🔴 HIGH — 7 CVE en 5 groupes
+## 🔴 HIGH — 6 CVE en 5 groupes
 
 ### 1. `next` — 15.5.18 → **16.2.11**
 
@@ -64,10 +64,10 @@
 
 ### 4. `postcss` — 8.4.31 → **8.5.18**
 
-- **CVE** : `CVE-2026-45623` (HIGH/Data leak), `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
+- **CVE** : `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
 - **Type** : Data leak
 - **Score max** : 30
-- **Title** : PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments
+- **Title** : PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.18`)
 
@@ -83,7 +83,7 @@
 
 ---
 
-## 🟡 MEDIUM — 14 CVE en 10 groupes
+## 🟡 MEDIUM — 15 CVE en 10 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -123,7 +123,16 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
 
-### 5. `sharp` — 0.34.5 → **0.35.0**
+### 5. `postcss` — 8.4.31 → **8.5.12**
+
+- **CVE** : `CVE-2026-45623` (HIGH/Unclassified), `CVE-2026-41305` (MEDIUM/XSS)
+- **Type** : Unclassified, XSS
+- **Score max** : 15
+- **Title** : PostCSS takes a CSS file and provides an API to analyze and modify its ...
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.12`)
+
+### 6. `sharp` — 0.34.5 → **0.35.0**
 
 - **CVE** : `GHSA-f88m-g3jw-g9cj` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -132,7 +141,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up sharp` (jusqu'à >= `0.35.0`)
 
-### 6. `brace-expansion` — 2.0.2 → **5.0.8**
+### 7. `brace-expansion` — 2.0.2 → **5.0.8**
 
 - **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS)
 - **Type** : DoS
@@ -141,7 +150,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.8`)
 
-### 7. `sigstore` — 3.1.0 → **4.1.1**
+### 8. `sigstore` — 3.1.0 → **4.1.1**
 
 - **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -150,7 +159,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
 
-### 8. `tar` — 7.5.11 → **7.5.18**
+### 9. `tar` — 7.5.11 → **7.5.18**
 
 - **CVE** : `CVE-2026-59874` (HIGH/DoS)
 - **Type** : DoS
@@ -158,15 +167,6 @@
 - **Title** : tar: Node-tar: Denial of Service via malformed tar archive header
 - **Source** : `Node.js`
 - **Fix** : `pnpm up tar` (jusqu'à >= `7.5.18`)
-
-### 9. `postcss` — 8.4.31 → **8.5.10**
-
-- **CVE** : `CVE-2026-41305` (MEDIUM/XSS)
-- **Type** : XSS
-- **Score max** : 12
-- **Title** : postcss: PostCSS: Cross-Site Scripting (XSS) via improper escaping of style closing tags
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.10`)
 
 ### 10. `ip-address` — 10.1.0 → **10.1.1**
 
