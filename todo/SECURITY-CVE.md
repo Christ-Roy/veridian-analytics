@@ -1,8 +1,8 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-07-29 04:15 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-29
+> **Dernier run** : 2026-07-30 04:15 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-07-30
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
 > **CVE bruts détectés** : 53 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
@@ -10,9 +10,9 @@
 ## TL;DR
 
 - 🚨 **1 RED** — fix prioritaire
-- 🔴 **6 HIGH** — action recommandée cette semaine
-- 🟡 **15 MEDIUM** — récap, pas urgent
-- 🟢 **13 NOISE** — annexe collapse
+- 🔴 **7 HIGH** — action recommandée cette semaine
+- 🟡 **17 MEDIUM** — récap, pas urgent
+- 🟢 **10 NOISE** — annexe collapse
 
 
 ---
@@ -31,14 +31,14 @@
 
 ---
 
-## 🔴 HIGH — 6 CVE en 5 groupes
+## 🔴 HIGH — 7 CVE en 5 groupes
 
 ### 1. `next` — 15.5.18 → **16.2.11**
 
 - **CVE** : `CVE-2026-64645` (HIGH/SSRF), `CVE-2026-64649` (HIGH/SSRF)
 - **Type** : SSRF
 - **Score max** : 45
-- **Title** : Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname
+- **Title** : next: Next.js: Server-Side Request Forgery vulnerability
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
 
@@ -64,10 +64,10 @@
 
 ### 4. `postcss` — 8.4.31 → **8.5.18**
 
-- **CVE** : `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
+- **CVE** : `CVE-2026-45623` (HIGH/Data leak), `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
 - **Type** : Data leak
 - **Score max** : 30
-- **Title** : PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure
+- **Title** : postcss: PostCSS: Information disclosure and denial of service via crafted CSS input
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.18`)
 
@@ -83,7 +83,7 @@
 
 ---
 
-## 🟡 MEDIUM — 15 CVE en 10 groupes
+## 🟡 MEDIUM — 17 CVE en 10 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -106,10 +106,10 @@
 
 ### 3. `next` — 15.5.18 → **16.2.11**
 
-- **CVE** : `CVE-2026-64641` (HIGH/DoS)
-- **Type** : DoS
+- **CVE** : `CVE-2026-64641` (HIGH/DoS), `CVE-2026-64643` (MEDIUM/Data leak), `CVE-2026-64647` (MEDIUM/Data leak), `CVE-2026-64648` (MEDIUM/Data leak)
+- **Type** : Data leak, DoS
 - **Score max** : 15
-- **Title** : Next.js: Denial of Service in App Router using Server Actions
+- **Title** : next: Next.js: Denial of Service via crafted requests to App Router with Server Actions
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
 
@@ -123,16 +123,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
 
-### 5. `postcss` — 8.4.31 → **8.5.12**
-
-- **CVE** : `CVE-2026-45623` (HIGH/Unclassified), `CVE-2026-41305` (MEDIUM/XSS)
-- **Type** : Unclassified, XSS
-- **Score max** : 15
-- **Title** : PostCSS takes a CSS file and provides an API to analyze and modify its ...
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.12`)
-
-### 6. `sharp` — 0.34.5 → **0.35.0**
+### 5. `sharp` — 0.34.5 → **0.35.0**
 
 - **CVE** : `GHSA-f88m-g3jw-g9cj` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -141,7 +132,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up sharp` (jusqu'à >= `0.35.0`)
 
-### 7. `brace-expansion` — 2.0.2 → **5.0.8**
+### 6. `brace-expansion` — 2.0.2 → **5.0.8**
 
 - **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS)
 - **Type** : DoS
@@ -150,7 +141,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.8`)
 
-### 8. `sigstore` — 3.1.0 → **4.1.1**
+### 7. `sigstore` — 3.1.0 → **4.1.1**
 
 - **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -159,7 +150,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
 
-### 9. `tar` — 7.5.11 → **7.5.18**
+### 8. `tar` — 7.5.11 → **7.5.18**
 
 - **CVE** : `CVE-2026-59874` (HIGH/DoS)
 - **Type** : DoS
@@ -167,6 +158,15 @@
 - **Title** : tar: Node-tar: Denial of Service via malformed tar archive header
 - **Source** : `Node.js`
 - **Fix** : `pnpm up tar` (jusqu'à >= `7.5.18`)
+
+### 9. `postcss` — 8.4.31 → **8.5.10**
+
+- **CVE** : `CVE-2026-41305` (MEDIUM/XSS)
+- **Type** : XSS
+- **Score max** : 12
+- **Title** : postcss: PostCSS: Cross-Site Scripting (XSS) via improper escaping of style closing tags
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.10`)
 
 ### 10. `ip-address` — 10.1.0 → **10.1.1**
 
@@ -180,14 +180,14 @@
 
 ---
 
-## 🟢 NOISE filtré (13 CVE)
+## 🟢 NOISE filtré (10 CVE)
 
 <details>
 <summary>Liste complète (6 groupes — clique pour déplier)</summary>
 
 | Package | Installed | Fix | CVE count | Max score |
 |---|---|---|---|---|
-| `next` | 15.5.18 | 16.2.11 | 5 | 6 |
+| `next` | 15.5.18 | 16.2.11 | 2 | 6 |
 | `next-auth` | 5.0.0-beta.25 | 5.0.0-beta.30 | 1 | 6 |
 | `ua-parser-js` | 2.0.9 | 2.0.10 | 1 | 6 |
 | `@sigstore/core` | 2.0.0 | 3.2.1 | 1 | 6 |
