@@ -55,7 +55,7 @@ C'est là qu'Analytics se place.
 - **Monorepo `veridian-platform/`** avec toutes les apps partagées
 - **Skills Claude** pour provisionner en < 30 min par client
 - **Stack maison éprouvée** : Next.js 15, Prisma + Postgres dédié,
-  Auth.js v5, Cloudflare Pages, Dokploy, Brevo, Telnyx/OVH SIP
+  Auth.js v5, Cloudflare Pages, cluster Nomad, Brevo, Telnyx/OVH SIP
 - **Monitoring `/opt/veridian/monitoring/`** + alertes Telegram
 
 Chaque brique Analytics doit être pensée pour s'intégrer dans cette
@@ -218,7 +218,7 @@ c'est via un `FormSchema` déclaratif en DB, pas un `if (tenantId ===
 
 **5. Zéro Supabase, zéro dépendance managed cher.**
 Tout tourne sur l'infra Veridian (Postgres dédié, Cloudflare Pages,
-Dokploy). Pas d'Airtable, pas de Firebase, pas de Auth0. Robert doit
+cluster Nomad). Pas d'Airtable, pas de Firebase, pas de Auth0. Robert doit
 pouvoir maintenir en solo.
 
 **6. Chaque nouvelle feature doit avoir des tests F.6 associés.**

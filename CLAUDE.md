@@ -37,7 +37,7 @@ juste "en gel feature". Il est en **fin de vie programmée**.
 
 **Quand toutes ces conditions sont vraies → archive + remove du repo** :
 - Tag `legacy-final-snapshot` posé sur le dernier commit
-- Stack Dokploy `compose-synthesize-virtual-transmitter-i9bv43` détruite
+- Job Nomad `analytics` stoppé/purgé (`nomad-v stop analytics`)
 - DNS retiré
 - Repo GitHub passé en archive (read-only)
 - Worktree local supprimé
@@ -210,7 +210,7 @@ docker push ghcr.io/christ-roy/analytics:dev-$(git rev-parse --short HEAD)
 
 ## Sécurité
 
-- **AUTH_SECRET, DATABASE_URL, ADMIN_API_KEY** : Dokploy ENV uniquement
+- **AUTH_SECRET, DATABASE_URL, ADMIN_API_KEY** : Nomad Variables uniquement (`nomad/jobs/analytics`, `template{env=true}`)
 - **`.env.example`** : que des placeholders, jamais de vraie valeur
 - **CVE** : CI bloque sur HIGH/CRITICAL (`pnpm audit --prod --audit-level high`)
 - **Trivy** : scan quotidien image, HIGH/CRITICAL bloquant
@@ -219,10 +219,10 @@ docker push ghcr.io/christ-roy/analytics:dev-$(git rev-parse --short HEAD)
 
 ## Prod opérationnelle
 
-- **Compose Dokploy** : `compose-synthesize-virtual-transmitter-i9bv43`
-  (`ssh prod-pub 'sudo ls /etc/dokploy/compose/compose-synthesize-virtual-transmitter-i9bv43/'`)
-- **Container** : `compose-synthesize-virtual-transmitter-i9bv43-analytics-prod-1`
-- **Image SHA** prod actuelle : voir `docker-compose.yml` (pinned)
+- **Job Nomad** : `analytics` — inspection via `nomad-v state` / `nomad-v logs analytics`
+  (Dokploy décommissionné 2026-07-10 ; ex-stack `compose-synthesize-virtual-transmitter-i9bv43`)
+- **Container** : alloc Nomad du job `analytics` (`nomad-v exec <alloc> ...` pour entrer)
+- **Image SHA** prod actuelle : `var image_tag` du job (`nomad job status analytics`)
 - **Health check** : `https://analytics.app.veridian.site/api/health`
 - **Logs** : `ssh prod-pub 'sudo docker logs compose-synthesize-virtual-transmitter-i9bv43-analytics-prod-1 --tail 100 -f'`
 
