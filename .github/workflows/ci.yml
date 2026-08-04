@@ -34,7 +34,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10
@@ -99,7 +99,7 @@ jobs:
       ENABLE_TEST_APIS: 'true'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10
@@ -254,7 +254,7 @@ jobs:
     name: CVE audit (high+critical bloquant)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10
@@ -294,7 +294,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: docker/setup-buildx-action@v3
