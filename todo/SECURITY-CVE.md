@@ -1,18 +1,18 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-08-03 04:17 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-03
+> **Dernier run** : 2026-08-04 04:17 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-04
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 53 (avant filtrage)
+> **CVE bruts détectés** : 58 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **1 RED** — fix prioritaire
-- 🔴 **7 HIGH** — action recommandée cette semaine
-- 🟡 **17 MEDIUM** — récap, pas urgent
-- 🟢 **10 NOISE** — annexe collapse
+- 🔴 **8 HIGH** — action recommandée cette semaine
+- 🟡 **18 MEDIUM** — récap, pas urgent
+- 🟢 **11 NOISE** — annexe collapse
 
 
 ---
@@ -31,7 +31,7 @@
 
 ---
 
-## 🔴 HIGH — 7 CVE en 5 groupes
+## 🔴 HIGH — 8 CVE en 6 groupes
 
 ### 1. `next` — 15.5.18 → **16.2.11**
 
@@ -42,7 +42,16 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
 
-### 2. `@auth/core` — 0.37.2 → **0.41.3**
+### 2. `ip-address` — 10.1.0 → **10.3.1**
+
+- **CVE** : `CVE-2026-69192` (HIGH/SSRF)
+- **Type** : SSRF
+- **Score max** : 45
+- **Title** : ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass
+- **Source** : `Node.js`
+- **Fix** : `pnpm up ip-address` (jusqu'à >= `10.3.1`)
+
+### 3. `@auth/core` — 0.37.2 → **0.41.3**
 
 - **CVE** : `GHSA-7rqj-j65f-68wh` (CRITICAL/Unclassified)
 - **Type** : Unclassified
@@ -52,7 +61,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up @auth/core` (jusqu'à >= `0.41.3`)
 
-### 3. `next-auth` — 5.0.0-beta.25 → **5.0.0-beta.32**
+### 4. `next-auth` — 5.0.0-beta.25 → **5.0.0-beta.32**
 
 - **CVE** : `GHSA-7rqj-j65f-68wh` (CRITICAL/Unclassified)
 - **Type** : Unclassified
@@ -62,7 +71,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up next-auth` (jusqu'à >= `5.0.0-beta.32`)
 
-### 4. `postcss` — 8.4.31 → **8.5.18**
+### 5. `postcss` — 8.4.31 → **8.5.18**
 
 - **CVE** : `CVE-2026-45623` (HIGH/Data leak), `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
 - **Type** : Data leak
@@ -71,7 +80,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.18`)
 
-### 5. `tar` — 7.5.11 → **7.5.19**
+### 6. `tar` — 7.5.11 → **7.5.19**
 
 - **CVE** : `CVE-2026-59873` (CRITICAL/DoS)
 - **Type** : DoS
@@ -83,7 +92,7 @@
 
 ---
 
-## 🟡 MEDIUM — 17 CVE en 10 groupes
+## 🟡 MEDIUM — 18 CVE en 10 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -132,14 +141,14 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up sharp` (jusqu'à >= `0.35.0`)
 
-### 6. `brace-expansion` — 2.0.2 → **5.0.8**
+### 6. `brace-expansion` — 2.0.2 → **5.0.9**
 
-- **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS)
-- **Type** : DoS
+- **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS), `CVE-2026-69152` (HIGH/Unclassified)
+- **Type** : DoS, Unclassified
 - **Score max** : 15
 - **Title** : brace-expansion: Brace-expansion: Denial of Service due to exponential-time complexity
 - **Source** : `Node.js`
-- **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.8`)
+- **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.9`)
 
 ### 7. `sigstore` — 3.1.0 → **4.1.1**
 
@@ -180,15 +189,16 @@
 
 ---
 
-## 🟢 NOISE filtré (10 CVE)
+## 🟢 NOISE filtré (11 CVE)
 
 <details>
-<summary>Liste complète (6 groupes — clique pour déplier)</summary>
+<summary>Liste complète (7 groupes — clique pour déplier)</summary>
 
 | Package | Installed | Fix | CVE count | Max score |
 |---|---|---|---|---|
 | `next` | 15.5.18 | 16.2.11 | 2 | 6 |
 | `next-auth` | 5.0.0-beta.25 | 5.0.0-beta.30 | 1 | 6 |
+| `postcss` | 8.4.31 | 8.5.23 | 1 | 6 |
 | `ua-parser-js` | 2.0.9 | 2.0.10 | 1 | 6 |
 | `@sigstore/core` | 2.0.0 | 3.2.1 | 1 | 6 |
 | `brace-expansion` | 2.0.2 | 5.0.5 | 1 | 6 |
