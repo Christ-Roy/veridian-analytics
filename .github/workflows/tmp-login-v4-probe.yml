@@ -1,6 +1,7 @@
 name: tmp-login-v4-probe
 on:
-  workflow_dispatch:
+  push:
+    branches: [tmp-verify-login-action-v4]
 jobs:
   probe:
     runs-on: ubuntu-latest
