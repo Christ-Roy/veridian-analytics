@@ -60,6 +60,8 @@ services:
       - traefik.http.routers.analytics-prod.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.analytics-prod.entrypoints=websecure
       - traefik.http.routers.analytics-prod.tls.certresolver=letsencrypt
+      - traefik.http.routers.analytics-prod.middlewares=analytics-prod-noindex@docker
+      - traefik.http.middlewares.analytics-prod-noindex.headers.customresponseheaders.X-Robots-Tag=noindex, nofollow, noarchive
       - traefik.http.services.analytics-prod.loadbalancer.server.port=3000
 
 networks:
