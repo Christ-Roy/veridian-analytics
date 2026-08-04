@@ -21,7 +21,7 @@ Extrait du monorepo `veridian-platform` le 2026-05-13.
 - **DB** : Postgres (schema `analytics`) + Prisma 6.19+
 - **Tests** : Vitest (unit) + Playwright (e2e)
 - **Package manager** : pnpm 10
-- **Deploy** : GHCR → Dokploy GitOps (compose pull depuis ce repo)
+- **Deploy** : GHCR → cluster Nomad (jobs `deploy/*.nomad.hcl`, CI SSH-bastion ; Dokploy décommissionné 2026-07-10)
 
 ## URLs
 
@@ -60,10 +60,11 @@ node .next/standalone/server.js
 ## Deploy
 
 1. Push sur `main` → CI build + push GHCR
-2. CI appelle l'API Dokploy `compose.redeploy` (compose-id stocké en
-   GitHub Variable `ANALYTICS_COMPOSE_ID_PROD`)
-3. Le compose Dokploy pull la nouvelle image et redémarre
+2. CI déploie sur le cluster Nomad via SSH-bastion
+   (`nomad job run -var image_tag=<sha>`)
+3. Nomad ordonnance la nouvelle alloc (pull image + rollout health-gated)
 4. Health check post-deploy + rollback auto si KO
+   (`nomad-v state` / `nomad-v logs analytics`)
 
 Voir `.github/workflows/ci.yml` pour le pipeline complet.
 
@@ -79,7 +80,7 @@ Voir `.github/workflows/ci.yml` pour le pipeline complet.
 - `pnpm audit --prod --audit-level high` bloquant en CI
 - Trivy scan quotidien sur image Docker (HIGH/CRIT bloquant)
 - Dependabot hebdomadaire (npm + docker + actions)
-- AUTH_SECRET ne sort jamais du Dokploy ENV
+- AUTH_SECRET ne sort jamais des Nomad Variables (`nomad/jobs/analytics`, `template{env=true}`)
 - Headers de sécurité injectés via `next.config.ts`
 
 ## Docs
