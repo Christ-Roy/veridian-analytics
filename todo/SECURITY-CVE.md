@@ -1,8 +1,8 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-08-06 04:16 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-06
+> **Dernier run** : 2026-08-07 04:16 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-07
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
 > **CVE bruts détectés** : 42 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
@@ -33,7 +33,7 @@
 - **CVE** : `CVE-2026-69192` (HIGH/SSRF)
 - **Type** : SSRF
 - **Score max** : 45
-- **Title** : ip-address is a library for parsing and manipulating IPv4 and IPv6 add ...
+- **Title** : ip-address: ip-address: Inconsistent IP address parsing leads to Server-Side Request Forgery (SSRF) and trust-boundary bypass
 - **Source** : `Node.js`
 - **Fix** : `pnpm up ip-address` (jusqu'à >= `10.3.1`)
 
