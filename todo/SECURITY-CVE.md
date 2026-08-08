@@ -1,17 +1,17 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-08-07 04:16 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-07
+> **Dernier run** : 2026-08-08 04:17 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-08
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 42 (avant filtrage)
+> **CVE bruts détectés** : 44 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **0 RED** — fix prioritaire
 - 🔴 **6 HIGH** — action recommandée cette semaine
-- 🟡 **15 MEDIUM** — récap, pas urgent
+- 🟡 **17 MEDIUM** — récap, pas urgent
 - 🟢 **8 NOISE** — annexe collapse
 
 
@@ -58,7 +58,7 @@
 
 ---
 
-## 🟡 MEDIUM — 15 CVE en 8 groupes
+## 🟡 MEDIUM — 17 CVE en 9 groupes
 
 ### 1. `picomatch` — 4.0.3 → **4.0.4**
 
@@ -96,7 +96,16 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.9`)
 
-### 5. `sigstore` — 3.1.0 → **4.1.1**
+### 5. `nanoid` — 3.3.12 → **5.1.16**
+
+- **CVE** : `CVE-2026-67213` (HIGH/DoS), `CVE-2026-67214` (HIGH/DoS)
+- **Type** : DoS
+- **Score max** : 15
+- **Title** : nanoid (Nano ID) before 5.1.6 contains an infinite loop in the customA ...
+- **Source** : `Node.js`
+- **Fix** : `pnpm up nanoid` (jusqu'à >= `5.1.16`)
+
+### 6. `sigstore` — 3.1.0 → **4.1.1**
 
 - **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
 - **Type** : Unclassified
@@ -105,7 +114,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
 
-### 6. `tar` — 7.5.11 → **7.5.18**
+### 7. `tar` — 7.5.11 → **7.5.18**
 
 - **CVE** : `CVE-2026-59874` (HIGH/DoS)
 - **Type** : DoS
@@ -114,7 +123,7 @@
 - **Source** : `Node.js`
 - **Fix** : `pnpm up tar` (jusqu'à >= `7.5.18`)
 
-### 7. `postcss` — 8.4.31 → **8.5.23**
+### 8. `postcss` — 8.4.31 → **8.5.23**
 
 - **CVE** : `CVE-2026-41305` (MEDIUM/XSS), `CVE-2026-69153` (MEDIUM/Data leak)
 - **Type** : Data leak, XSS
@@ -123,7 +132,7 @@
 - **Source** : `pnpm-lock.yaml`
 - **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.23`)
 
-### 8. `ip-address` — 10.1.0 → **10.1.1**
+### 9. `ip-address` — 10.1.0 → **10.1.1**
 
 - **CVE** : `CVE-2026-42338` (MEDIUM/XSS)
 - **Type** : XSS
