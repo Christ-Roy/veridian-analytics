@@ -1,4 +1,4 @@
-// Middleware Next.js — edge runtime, utilise auth.config (sans Prisma)
+// Proxy Next.js, utilise auth.config (sans Prisma)
 // pour protéger /dashboard/**.
 //
 // En plus du guard auth, on injecte un header `x-pathname-url` avec l'URL
@@ -12,7 +12,7 @@ import { authConfig } from './auth.config';
 
 const { auth } = NextAuth(authConfig);
 
-export default auth(async function middleware(req) {
+export default auth(async function proxy(req) {
   const { NextResponse } = await import('next/server');
   // On propage l'URL complete via un header applique a la REQUEST
   // downstream (le trick Next 15 pour que les layouts puissent lire

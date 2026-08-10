@@ -83,7 +83,7 @@ function detectAuthMode(): AuthMode | null {
   const adcPath =
     process.env.GOOGLE_APPLICATION_CREDENTIALS ||
     path.join(os.homedir(), '.config/gcloud/application_default_credentials.json');
-  if (fs.existsSync(adcPath)) {
+  if (fs.existsSync(/* turbopackIgnore: true */ adcPath)) {
     return 'adc';
   }
   return null;
@@ -101,12 +101,12 @@ function readAdc(): AdcCredFile {
   const p =
     process.env.GOOGLE_APPLICATION_CREDENTIALS ||
     path.join(os.homedir(), '.config/gcloud/application_default_credentials.json');
-  if (!fs.existsSync(p)) {
+  if (!fs.existsSync(/* turbopackIgnore: true */ p)) {
     throw new GscConfigError(
       `ADC file not found at ${p}. Run: gcloud auth application-default login --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/webmasters.readonly'`,
     );
   }
-  const raw = fs.readFileSync(p, 'utf8');
+  const raw = fs.readFileSync(/* turbopackIgnore: true */ p, 'utf8');
   return JSON.parse(raw) as AdcCredFile;
 }
 
