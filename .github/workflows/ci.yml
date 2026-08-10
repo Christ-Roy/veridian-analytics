@@ -347,7 +347,9 @@ jobs:
   # par le job `e2e` cloud qui simule la prod avec un Postgres éphémère.
   deploy-prod:
     needs: docker
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Production promotion is manual. The legacy Dokploy path stays inert
+    # unless an operator explicitly creates the opt-in repository variable.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.AUTO_DEPLOY_PROD == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy prod (with rollback tag)
