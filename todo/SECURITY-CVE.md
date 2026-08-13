@@ -1,162 +1,20 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-08-08 04:17 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-08
+> **Dernier run** : 2026-08-13 04:16 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-13
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 44 (avant filtrage)
+> **CVE bruts détectés** : 0 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **0 RED** — fix prioritaire
-- 🔴 **6 HIGH** — action recommandée cette semaine
-- 🟡 **17 MEDIUM** — récap, pas urgent
-- 🟢 **8 NOISE** — annexe collapse
+- 🔴 **0 HIGH** — action recommandée cette semaine
+- 🟡 **0 MEDIUM** — récap, pas urgent
+- 🟢 **0 NOISE** — annexe collapse
 
-
----
-
-## 🔴 HIGH — 6 CVE en 4 groupes
-
-### 1. `next` — 15.5.18 → **16.2.11**
-
-- **CVE** : `CVE-2026-64645` (HIGH/SSRF), `CVE-2026-64649` (HIGH/SSRF)
-- **Type** : SSRF
-- **Score max** : 45
-- **Title** : next: Next.js: Server-Side Request Forgery vulnerability
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
-
-### 2. `ip-address` — 10.1.0 → **10.3.1**
-
-- **CVE** : `CVE-2026-69192` (HIGH/SSRF)
-- **Type** : SSRF
-- **Score max** : 45
-- **Title** : ip-address: ip-address: Inconsistent IP address parsing leads to Server-Side Request Forgery (SSRF) and trust-boundary bypass
-- **Source** : `Node.js`
-- **Fix** : `pnpm up ip-address` (jusqu'à >= `10.3.1`)
-
-### 3. `postcss` — 8.4.31 → **8.5.18**
-
-- **CVE** : `CVE-2026-45623` (HIGH/Data leak), `GHSA-r28c-9q8g-f849` (HIGH/Data leak)
-- **Type** : Data leak
-- **Score max** : 30
-- **Title** : postcss: PostCSS: Information disclosure and denial of service via crafted CSS input
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.18`)
-
-### 4. `tar` — 7.5.11 → **7.5.19**
-
-- **CVE** : `CVE-2026-59873` (CRITICAL/DoS)
-- **Type** : DoS
-- **Score max** : 30
-- **Title** : tar: node-tar: Denial of Service via crafted gzip bomb
-- **Source** : `Node.js`
-- **Fix** : `pnpm up tar` (jusqu'à >= `7.5.19`)
-
-
----
-
-## 🟡 MEDIUM — 17 CVE en 9 groupes
-
-### 1. `picomatch` — 4.0.3 → **4.0.4**
-
-- **CVE** : `CVE-2026-33672` (MEDIUM/Auth bypass), `CVE-2026-33671` (HIGH/DoS)
-- **Type** : Auth bypass, DoS
-- **Score max** : 18
-- **Title** : picomatch: Picomatch: Data integrity compromised via method injection with crafted POSIX bracket expressions
-- **Source** : `Node.js`
-- **Fix** : `pnpm up picomatch` (jusqu'à >= `4.0.4`)
-
-### 2. `next` — 15.5.18 → **16.2.11**
-
-- **CVE** : `CVE-2026-64641` (HIGH/DoS), `CVE-2026-64643` (MEDIUM/Data leak), `CVE-2026-64647` (MEDIUM/Data leak), `CVE-2026-64648` (MEDIUM/Data leak)
-- **Type** : Data leak, DoS
-- **Score max** : 15
-- **Title** : next: Next.js: Denial of Service via crafted requests to App Router with Server Actions
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up next` (jusqu'à >= `16.2.11`)
-
-### 3. `sharp` — 0.34.5 → **0.35.0**
-
-- **CVE** : `GHSA-f88m-g3jw-g9cj` (HIGH/Unclassified)
-- **Type** : Unclassified
-- **Score max** : 15
-- **Title** : sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up sharp` (jusqu'à >= `0.35.0`)
-
-### 4. `brace-expansion` — 2.0.2 → **5.0.9**
-
-- **CVE** : `CVE-2026-13149` (HIGH/DoS), `CVE-2026-14257` (HIGH/DoS), `CVE-2026-69152` (HIGH/DoS)
-- **Type** : DoS
-- **Score max** : 15
-- **Title** : brace-expansion: Brace-expansion: Denial of Service due to exponential-time complexity
-- **Source** : `Node.js`
-- **Fix** : `pnpm up brace-expansion` (jusqu'à >= `5.0.9`)
-
-### 5. `nanoid` — 3.3.12 → **5.1.16**
-
-- **CVE** : `CVE-2026-67213` (HIGH/DoS), `CVE-2026-67214` (HIGH/DoS)
-- **Type** : DoS
-- **Score max** : 15
-- **Title** : nanoid (Nano ID) before 5.1.6 contains an infinite loop in the customA ...
-- **Source** : `Node.js`
-- **Fix** : `pnpm up nanoid` (jusqu'à >= `5.1.16`)
-
-### 6. `sigstore` — 3.1.0 → **4.1.1**
-
-- **CVE** : `CVE-2026-48815` (HIGH/Unclassified)
-- **Type** : Unclassified
-- **Score max** : 15
-- **Title** : sigstore: Sigstore: Unauthorized certificates accepted due to ignored `certificateOIDs` verification option
-- **Source** : `Node.js`
-- **Fix** : `pnpm up sigstore` (jusqu'à >= `4.1.1`)
-
-### 7. `tar` — 7.5.11 → **7.5.18**
-
-- **CVE** : `CVE-2026-59874` (HIGH/DoS)
-- **Type** : DoS
-- **Score max** : 15
-- **Title** : tar: Node-tar: Denial of Service via malformed tar archive header
-- **Source** : `Node.js`
-- **Fix** : `pnpm up tar` (jusqu'à >= `7.5.18`)
-
-### 8. `postcss` — 8.4.31 → **8.5.23**
-
-- **CVE** : `CVE-2026-41305` (MEDIUM/XSS), `CVE-2026-69153` (MEDIUM/Data leak)
-- **Type** : Data leak, XSS
-- **Score max** : 12
-- **Title** : postcss: PostCSS: Cross-Site Scripting (XSS) via improper escaping of style closing tags
-- **Source** : `pnpm-lock.yaml`
-- **Fix** : `pnpm up postcss` (jusqu'à >= `8.5.23`)
-
-### 9. `ip-address` — 10.1.0 → **10.1.1**
-
-- **CVE** : `CVE-2026-42338` (MEDIUM/XSS)
-- **Type** : XSS
-- **Score max** : 12
-- **Title** : ip-address: ip-address: Cross-site scripting via improper HTML escaping of untrusted input
-- **Source** : `Node.js`
-- **Fix** : `pnpm up ip-address` (jusqu'à >= `10.1.1`)
-
-
----
-
-## 🟢 NOISE filtré (8 CVE)
-
-<details>
-<summary>Liste complète (4 groupes — clique pour déplier)</summary>
-
-| Package | Installed | Fix | CVE count | Max score |
-|---|---|---|---|---|
-| `next` | 15.5.18 | 16.2.11 | 2 | 6 |
-| `@sigstore/core` | 2.0.0 | 3.2.1 | 1 | 6 |
-| `brace-expansion` | 2.0.2 | 5.0.5 | 1 | 6 |
-| `tar` | 7.5.11 | 7.5.21 | 4 | 6 |
-
-</details>
+✅ **Aucune action requise.** Rapport régénéré quotidiennement.
 
 
 ---
