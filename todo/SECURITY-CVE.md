@@ -1,20 +1,34 @@
 # 🔒 Veille CVE automatique — veridian-analytics
 
 > **Généré par** : `veridian-infra/.github/workflows/cron-trivy.yml`
-> **Dernier run** : 2026-08-19 04:17 UTC
-> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-19
+> **Dernier run** : 2026-08-20 04:17 UTC
+> **Run URL** : local-cron@mail.mybigserveur.local:2026-08-20
 > **Image scannée** : `ghcr.io/christ-roy/analytics:latest`
-> **CVE bruts détectés** : 0 (avant filtrage)
+> **CVE bruts détectés** : 1 (avant filtrage)
 > **Scoring** : `veridian-infra/ci/trivy-scoring.yml`
 
 ## TL;DR
 
 - 🚨 **0 RED** — fix prioritaire
 - 🔴 **0 HIGH** — action recommandée cette semaine
-- 🟡 **0 MEDIUM** — récap, pas urgent
+- 🟡 **1 MEDIUM** — récap, pas urgent
 - 🟢 **0 NOISE** — annexe collapse
 
-✅ **Aucune action requise.** Rapport régénéré quotidiennement.
+✅ **Rien d'urgent.** Quelques items MEDIUM à voir quand t'as 5 min.
+
+
+---
+
+## 🟡 MEDIUM — 1 CVE en 1 groupe
+
+### 1. `deepmerge-ts` — 7.1.5 → **8.0.0**
+
+- **CVE** : `CVE-2026-40345` (HIGH/Unclassified)
+- **Type** : Unclassified
+- **Score max** : 15
+- **Title** : DeepmergeTS has stack exhaustion when merging recursive object graphs
+- **Source** : `pnpm-lock.yaml`
+- **Fix** : `pnpm up deepmerge-ts` (jusqu'à >= `8.0.0`)
 
 
 ---
