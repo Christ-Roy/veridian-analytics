@@ -43,6 +43,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Applique les correctifs de securite Alpine publies APRES le dernier rebuild de
+# l'image officielle node:22-alpine. Sans cette ligne, l'image finale reste
+# vulnerable tant que Docker Official Images n'a pas republie sa base, ce qui
+# prend des jours : CVE-2026-14456 (openssl/libcrypto3/libssl3 3.5.7-r0, corrige
+# en 3.5.8-r0) a bloque le gate Trivy pendant 7 jours pour cette seule raison.
+# Le correctif etait publie dans le depot Alpine 3.24, juste pas dans l'image.
+RUN apk upgrade --no-cache
+
 # The standalone server only needs the Node runtime. Removing package managers
 # also removes their unused transitive CVE surface from the production image.
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack && \
