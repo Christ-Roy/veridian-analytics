@@ -58,7 +58,8 @@
     ],
     "overrides": {
       "picomatch": "^4.0.4",
-      "deepmerge-ts": ">=8.0.0 <9"
+      "deepmerge-ts": ">=8.0.0 <9",
+      "js-yaml": ">=4.3.2 <5"
     }
   }
 }
