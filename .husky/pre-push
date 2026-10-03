@@ -1,23 +1,6 @@
-#!/usr/bin/env sh
-
-# Barriere trivy Veridian (CVE CRITICAL/HIGH avant push), logique partagee
-# avec guard-trivy-deploiement.py et le hook pre-push global. Ne PAS copier
-# la logique de scan ici : cette ligne suffit, elle importe le reste.
-python3 "$HOME/.claude/hooks/trivy-pre-push.py" "$@" || exit 1
-
-# Standard CI Veridian — pre-push hook
-# Refuse le push si fichier critique modifié sans test correspondant.
-# JAMAIS --no-verify (Constitution CI §3).
-
-if [ -x scripts/ci/check-test-mapping.sh ]; then
-  BASE_REF="${BASE_REF:-origin/$(git rev-parse --abbrev-ref HEAD)}"
-  # Si la branche distante n'existe pas (premier push), compare contre origin/main
-  if ! git rev-parse --verify --quiet "$BASE_REF" >/dev/null 2>&1; then
-    BASE_REF="origin/main"
-  fi
-  export BASE_REF
-  exec scripts/ci/check-test-mapping.sh
-fi
-
-echo "⚠ scripts/ci/check-test-mapping.sh absent ou non exécutable"
-exit 0
+#!/bin/sh
+# Garde-fou central Veridian (trivy, secrets, palier « rapide » de
+# scripts/ci/controles.tsv). La mécanique ne vit pas ici :
+# ~/nomad-veridian/standards/controles-portables/ — `gardes --help`.
+G="$(command -v gardes || echo "$HOME/nomad-veridian/standards/controles-portables/gardes")"
+exec "$G" pre-push "$@"
