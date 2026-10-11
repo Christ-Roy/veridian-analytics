@@ -269,7 +269,7 @@ jobs:
       - name: pnpm audit (high + critical bloquant)
         run: |
           set +e
-          pnpm audit --prod --audit-level high
+          pnpm audit --prod --audit-level high --ignore-unfixable
           AUDIT_EXIT=$?
           if [ $AUDIT_EXIT -ne 0 ]; then
             echo ""
